@@ -357,20 +357,6 @@ enum API {
         try await supabase.rpc("my_history", params: ["p_filter": filter]).execute().value
     }
 
-    // MARK: Tienda
-    /// Envía una transacción de StoreKit 2 (JWS firmado por Apple) a la Edge Function `app-store`, que la verifica
-    /// y otorga Plus o el artículo. La app ya no puede darse artículos por su cuenta.
-    static func verifyPurchase(jws: String) async throws {
-        struct R: Decodable { var status: String?; var error: String? }
-        do {
-            let r: R = try await supabase.functions.invoke("app-store", options: FunctionInvokeOptions(body: ["jws": jws]))
-            if let e = r.error { throw APIError.message(e) }
-        } catch FunctionsError.httpError(_, let data) {
-            let e = (try? JSONDecoder().decode(R.self, from: data))?.error
-            throw APIError.message(e ?? "No se pudo verificar la compra con el App Store.")
-        }
-    }
-
     // MARK: Push
     static func registerPushToken(_ token: String, sandbox: Bool) async {
         _ = try? await supabase.rpc("register_push_token", params: ["p_token": AnyJSON.string(token), "p_sandbox": .bool(sandbox)]).execute()
@@ -378,12 +364,6 @@ enum API {
 
     static func unregisterPushToken(_ token: String) async {
         _ = try? await supabase.rpc("unregister_push_token", params: ["p_token": token]).execute()
-    }
-
-    static func ownedItems() async -> Set<String> {
-        struct I: Decodable { var itemId: String }
-        let rows: [I] = (try? await supabase.from("user_items").select("item_id").execute().value) ?? []
-        return Set(rows.map(\.itemId))
     }
 }
 

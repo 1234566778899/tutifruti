@@ -145,13 +145,24 @@ sube al repo (`.gitignore`). Proyecto Supabase: `liejnmzxlpctqybecrbu`; la app y
    `update profiles set is_admin = true where username = '<usuario>';`.
 2. **Push**: configurado y probado en sandbox el 2026-11-11. Falta probar la clave de producción con un build de
    TestFlight/App Store (ver "Push (APNs)" abajo).
-3. **Compras**: productos en App Store Connect + URL de notificaciones v2; probar en sandbox; tras publicar la app,
-   aplicar `20261111000018_purchases.sql`.
+3. **App Store**: completar la ficha y enviar a revisión (ver "App Store" abajo). Ya no hay compras.
 4. **SMTP propio** (Resend + `tutifruti.site`) → pegar `supabase/templates/` en Auth → Emails → probar registro y
    "olvidé mi contraseña" en iOS y web.
 5. Probar Safari/iPhone, partida mixta web + iOS y Sign in with Apple.
 6. Opcional/usuario: TXT de Search Console en Vercel (Claude no puede tocar DNS), `contacto@tutifruti.site`, Apple en
    la web, rotar claves.
+
+### App Store (2026-11-11)
+- **Todo es gratis**: sin compras ni Tutifruti Plus. Se quitó StoreKit; "Tienda" pasó a "Recompensas" (avatares y
+  temas por nivel: `StoreManager.items`; Neón nivel 10, igual en `webapp/src/lib/themes.ts`). Salas de 12 jugadores y
+  categorías temáticas para todos. **No aplicar** `20261111000018_purchases.sql`; la función `app-store` queda sin uso.
+- [x] `20261111000020_all_free.sql` aplicada (2026-11-11): `create_room` ya no exige Plus para 12 jugadores y
+      `grant_item` quedó revocada para los clientes.
+- Ficha creada en App Store Connect: "Tutifruti AI", es-MX, SKU `tutifruti`. Build **1.0 (1)** subido.
+  Para subir otro: subir `CURRENT_PROJECT_VERSION`, `xcodegen generate`, `xcodebuild archive` (Release) y
+  `xcodebuild -exportArchive` con `ExportOptions.plist` (cambiando `destination` a `upload`).
+- [ ] Pendiente para revisión: aceptar el contrato actualizado del Apple Developer Program (titular), capturas,
+      descripción, clasificación por edad, etiquetas de privacidad y notas para el revisor (se entra como invitado).
 
 ### Para activar lo implementado el 2026-11-11 (código listo en el repo, falta aplicarlo)
 - [x] Migraciones `20261111000012` a `20261111000017` aplicadas con psql el 2026-11-11 (prueba de humo OK).

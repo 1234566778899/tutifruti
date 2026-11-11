@@ -24,8 +24,8 @@
 		<li>Podemos silenciar, suspender o borrar cuentas que incumplan estas normas, y eliminar contenido reportado.</li>
 	</ul>
 
-	<h2>Compras</h2>
-	<p>Las compras dentro de la app de iPhone se procesan a través de Apple y se rigen por sus condiciones, incluidas las de reembolso.</p>
+	<h2>Precio</h2>
+	<p>Tutifruti AI es gratis: no tiene compras ni suscripciones. Los avatares y temas se desbloquean jugando y subiendo de nivel.</p>
 
 	<h2>Disponibilidad</h2>
 	<p>Hacemos lo posible por mantener el juego disponible, pero puede haber cortes, cambios o funciones que se retiren. El servicio se ofrece “tal cual”, sin garantías más allá de las que exige la ley.</p>

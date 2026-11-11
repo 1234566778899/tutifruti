@@ -23,10 +23,14 @@
 		return () => { alive = false; clearInterval(t); };
 	});
 
-	const normalized = $derived.by(() => {
-		const raw = code.toUpperCase().replace(/[^A-Z0-9]/g, '');
-		return 'TUTI-' + (raw.startsWith('TUTI') ? raw.slice(4) : raw).slice(0, 4);
-	});
+	/** Solo las 4 letras finales: el prefijo TUTI- va fijo. Si pegan el código o el enlace completo, se recorta. */
+	function suffix(text: string) {
+		const raw = text.toUpperCase().replace(/[^A-Z0-9]/g, '');
+		const i = raw.lastIndexOf('TUTI');
+		return (i >= 0 ? raw.slice(i + 4) : raw).slice(0, 4);
+	}
+	const normalized = $derived('TUTI-' + suffix(code));
+	const focus = (el: HTMLInputElement) => { el.focus(); };
 	async function join() {
 		joining = true; joinError = null;
 		try { const id = await API.joinByCode(normalized); sfx('join'); goto(`/sala/${id}`); }
@@ -85,7 +89,11 @@
 	<div class="scrim" role="presentation" onclick={() => (showJoin = false)}></div>
 	<form class="sheet stack" onsubmit={(e) => { e.preventDefault(); join(); }}>
 		<h3 class="section-title">Unirse con código</h3>
-		<input class="field code" placeholder="TUTI-4F7K" bind:value={code} autocapitalize="characters" autocomplete="off" />
+		<label class="field codebox">
+			<span class="prefix" aria-hidden="true">TUTI-</span>
+			<input class="code" placeholder="4F7K" value={code} oninput={(e) => { code = suffix(e.currentTarget.value); e.currentTarget.value = code; }}
+				aria-label="Código de la sala, las 4 letras después de TUTI" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" use:focus />
+		</label>
 		<CandyButton type="submit" color="var(--sky)" icon={Hash} ink disabled={normalized.length !== 9 || joining}>{joining ? 'Entrando…' : 'Entrar a la sala'}</CandyButton>
 		{#if joinError}<p class="err">{joinError}</p>{/if}
 	</form>
@@ -123,7 +131,11 @@
 	.sheet { position: fixed; z-index: 41; left: 50%; bottom: 0; translate: -50% 0; width: min(100%, 560px); padding: 20px 16px calc(20px + env(safe-area-inset-bottom));
 		background: var(--deep); border-radius: 26px 26px 0 0; border: 1.5px solid var(--panel-stroke); animation: up .35s cubic-bezier(.3,1.3,.5,1); }
 	@keyframes up { from { transform: translateY(100%); } }
-	.code { text-align: center; font-size: 28px; letter-spacing: 2px; height: 64px; text-transform: uppercase; }
+	.codebox { display: flex; align-items: center; justify-content: center; height: 64px; font-size: 28px; letter-spacing: 2px; cursor: text; }
+	.codebox:focus-within { border-color: var(--lemon); background: rgba(255, 255, 255, 0.14); }
+	.prefix { color: rgba(255, 255, 255, 0.55); font-weight: 800; }
+	.code { width: 6.4ch; background: none; border: 0; outline: none; color: #fff; font: inherit; font-weight: 800; letter-spacing: inherit; padding: 0; text-transform: uppercase; }
+	.code::placeholder { color: rgba(255, 255, 255, 0.3); }
 	.err { color: #ff8aa0; font-weight: 800; text-align: center; margin: 0; }
 	@media (min-width: 900px) { .home { justify-content: flex-start; padding-top: 6vh; } }
 </style>

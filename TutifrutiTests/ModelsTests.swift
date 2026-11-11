@@ -32,8 +32,9 @@ final class ModelsTests: XCTestCase {
     func testUsableThemeRequiresUnlock() throws {
         var p = try profile(theme: "neon", level: 1, plus: false)
         XCTAssertEqual(AppState.usableTheme(p), "clasico")
-        p.isPlus = true
+        p.level = 10
         XCTAssertEqual(AppState.usableTheme(p), "neon")
+        p.level = 1
         p.theme = "pizarra"
         XCTAssertEqual(AppState.usableTheme(p), "clasico")
         p.level = 5

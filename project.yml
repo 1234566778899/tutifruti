@@ -14,7 +14,6 @@ targets:
     platform: iOS
     sources:
       - path: Tutifruti
-        excludes: ["Products.storekit"]
     info:
       path: Tutifruti/Info.plist
       properties:
@@ -28,6 +27,8 @@ targets:
           UIImageRespectsSafeAreaInsets: true
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
         NSPhotoLibraryUsageDescription: Para elegir tu foto de perfil.
+        # Solo usa HTTPS/TLS del sistema: exenta de la documentación de exportación de cifrado.
+        ITSAppUsesNonExemptEncryption: false
     entitlements:
       path: Tutifruti/Tutifruti.entitlements
       properties:
@@ -49,7 +50,6 @@ targets:
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
     scheme:
-      storeKitConfiguration: Tutifruti/Products.storekit
       testTargets: [TutifrutiTests]
   TutifrutiTests:
     type: bundle.unit-test

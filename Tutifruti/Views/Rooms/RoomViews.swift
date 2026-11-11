@@ -17,7 +17,6 @@ struct RoomConfigView: View {
     @State private var showMore = false
     @State private var pickCategories = false
 
-    private var isPlus: Bool { app.profile?.isPlus ?? false }
 
     /// Estilos de partida de un toque.
     private struct Preset: Identifiable { let id: String; let icon: String; let rounds: Int; let seconds: Int }
@@ -80,12 +79,7 @@ struct RoomConfigView: View {
                         ValueChips(title: "Tiempo por ronda", value: $s.roundSeconds, options: [60, 90, 120, 180]) {
                             $0 % 60 == 0 ? "\($0 / 60) min" : "\($0) s"
                         }
-                        ValueChips(title: "Jugadores máximos", value: $s.maxPlayers, options: [4, 6, 8, 12],
-                                   locked: isPlus ? [] : [12]) { "\($0)" }
-                        if !isPlus {
-                            Label("12 jugadores con Tutifruti Plus", systemImage: "crown.fill")
-                                .font(.caption.weight(.semibold)).foregroundStyle(.white.opacity(0.55))
-                        }
+                        ValueChips(title: "Jugadores máximos", value: $s.maxPlayers, options: [4, 6, 8, 12]) { "\($0)" }
                     }
                 }
 
@@ -219,7 +213,7 @@ struct ValueChips: View {
                     }
                     .buttonStyle(.plain)
                     .disabled(isLocked)
-                    .accessibilityLabel("\(title): \(label(v))\(isLocked ? ", requiere Plus" : "")")
+                    .accessibilityLabel("\(title): \(label(v))\(isLocked ? ", bloqueado" : "")")
                     .accessibilityAddTraits(on ? .isSelected : [])
                 }
             }
@@ -388,15 +382,10 @@ struct CategoryPickerView: View {
                 }
             case 1:
                 ForEach(themes, id: \.0) { name, cats in
-                    let locked = cats.first?.isPremium == true && !(app.profile?.isPlus ?? false)
                     Section {
-                        if locked {
-                            Label("Disponible con Tutifruti Plus", systemImage: "lock.fill").foregroundStyle(.secondary)
-                        } else {
-                            ForEach(cats) { toggleRow($0.name) }
-                        }
+                        ForEach(cats) { toggleRow($0.name) }
                     } header: {
-                        SectionTitle(text: name, trailing: cats.first?.isPremium == true ? "Premium" : nil).listRowInsets(EdgeInsets(top: 0, leading: 4, bottom: 6, trailing: 4))
+                        SectionTitle(text: name, trailing: nil).listRowInsets(EdgeInsets(top: 0, leading: 4, bottom: 6, trailing: 4))
                     }
                 }
                 GameSection("Generar con IA") {

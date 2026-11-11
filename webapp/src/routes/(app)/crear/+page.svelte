@@ -15,7 +15,6 @@
 	if (page.url.searchParams.get('publica')) { s.isPublic = true; s.name = 'Stop para todos'; }
 	let loading = $state(false), error = $state<string | null>(null), more = $state(false), picking = $state(false);
 	let all = $state<Category[]>([]);
-	const isPlus = $derived(app.profile?.is_plus ?? false);
 
 	const presets = [
 		{ id: 'Rápida', icon: Zap, rounds: 3, seconds: 60 },
@@ -78,7 +77,7 @@
 	<div class="panel stack values">
 		{@render chipRow('Rondas', chips([3, 5, 8, 10], s.rounds), s.rounds, (v) => (s.rounds = v), (v) => String(v))}
 		{@render chipRow('Tiempo por ronda', chips([60, 90, 120, 180], s.roundSeconds), s.roundSeconds, (v) => (s.roundSeconds = v), fmtTime)}
-		{@render chipRow('Jugadores máximos', chips([4, 6, 8, 12], s.maxPlayers), s.maxPlayers, (v) => (s.maxPlayers = v), (v) => String(v), isPlus ? [] : [12])}
+		{@render chipRow('Jugadores máximos', chips([4, 6, 8, 12], s.maxPlayers), s.maxPlayers, (v) => (s.maxPlayers = v), (v) => String(v))}
 	</div>
 
 	<h3 class="section-title">Categorías · {s.categories.length}</h3>
@@ -116,7 +115,7 @@
 		<div class="tiny muted">{title}</div>
 		<div class="chips">
 			{#each options as v}
-				<button class:on={v === value} disabled={locked.includes(v)} onclick={() => { set(v); sfx('tap', .5); }} title={locked.includes(v) ? 'Requiere Tutifruti Plus' : undefined}>{label(v)}{#if locked.includes(v)}<Lock size={12} />{/if}</button>
+				<button class:on={v === value} disabled={locked.includes(v)} onclick={() => { set(v); sfx('tap', .5); }} title={locked.includes(v) ? 'No disponible' : undefined}>{label(v)}{#if locked.includes(v)}<Lock size={12} />{/if}</button>
 			{/each}
 		</div>
 	</div>

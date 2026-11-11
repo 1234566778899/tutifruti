@@ -22,7 +22,6 @@ struct ProfileView: View {
                             Text(p.username).font(.system(.title2, design: .rounded).weight(.black)).foregroundStyle(.white)
                             HStack(spacing: 6) {
                                 GamePill(text: "Nivel \(p.level)", icon: "star.fill", color: Game.lemon)
-                                if p.isPlus { GamePill(text: "Plus", icon: "crown.fill", color: Game.grape) }
                             }
                             XPBar(progress: Double(p.xp) / Double(max(1, p.xpForNext)))
                                 .padding(.horizontal, 20).padding(.top, 2)
@@ -87,7 +86,7 @@ struct ProfileView: View {
                 NavigationLink { MyCategoriesView() } label: {
                     GameMenuRow(icon: "icon_categories", title: "Mis categorías", detail: "\(customCount) personalizadas · \(setCount) favoritos")
                 }
-                NavigationLink { StoreView() } label: { GameMenuRow(icon: "icon_shop", title: "Tienda", detail: "Avatares y temas") }
+                NavigationLink { StoreView() } label: { GameMenuRow(icon: "icon_shop", title: "Recompensas", detail: "Avatares y temas") }
             } header: {
                 SectionTitle(text: "Tu juego").listRowInsets(EdgeInsets(top: 0, leading: 4, bottom: 6, trailing: 4))
             }
@@ -136,7 +135,6 @@ struct ProfileView: View {
 // MARK: Editar perfil
 struct EditProfileView: View {
     @Environment(AppState.self) private var app
-    @Environment(StoreManager.self) private var store
     @Environment(\.dismiss) private var dismiss
     @State private var username = ""
     @State private var avatar = ""
@@ -155,7 +153,7 @@ struct EditProfileView: View {
                 .frame(maxWidth: .infinity)
                 .listRowBackground(Color.clear)
             }
-            GameSection("Avatar") { AvatarGrid(selection: $avatar, owned: store.ownedAvatars) }
+            GameSection("Avatar") { AvatarGrid(selection: $avatar, owned: StoreManager.ownedAvatars(level: app.profile?.level ?? 1)) }
             Section {
                 TextField("Nombre de usuario", text: $username)
                     .textInputAutocapitalization(.never).autocorrectionDisabled()

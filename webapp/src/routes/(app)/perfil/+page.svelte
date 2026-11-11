@@ -7,7 +7,7 @@
 	import { sfx, soundEnabled, setSoundEnabled, hapticsEnabled, setHapticsEnabled } from '#lib/sfx.ts';
 	import { FREE_AVATARS, AVATAR_NAMES } from '#lib/avatars.ts';
 	import { ACHIEVEMENT_ICONS, ACHIEVEMENT_COLORS } from '#lib/achievements.ts';
-	import { THEMES, themeUnlocked, usableTheme, type ThemeKey } from '#lib/themes.ts';
+	import { THEMES, THEME_LEVEL, themeUnlocked, usableTheme, type ThemeKey } from '#lib/themes.ts';
 	import { xpForNext, LANGUAGES, type Achievement, type HistoryRow, type UserAchievement } from '#lib/types.ts';
 	import Avatar from '#lib/components/Avatar.svelte';
 	import OutlinedTitle from '#lib/components/OutlinedTitle.svelte';
@@ -166,7 +166,7 @@
 							<button class="theme" class:on={k === theme} disabled={!ok} onclick={() => setTheme(k)}
 								style:--a={THEMES[k].header} style:--b={THEMES[k].night} style:--g="rgb({THEMES[k].glow})">
 								<span class="sw"></span><b>{THEMES[k].name}</b>
-								<small>{k === theme ? 'En uso' : ok ? 'Usar' : k === 'pizarra' ? 'Nivel 5' : 'Plus'}</small>
+								<small>{k === theme ? 'En uso' : ok ? 'Usar' : `Nivel ${THEME_LEVEL[k]}`}</small>
 							</button>
 						{/each}
 					</div>

@@ -15,11 +15,11 @@ final class AppState {
         didSet { ThemeStore.shared.key = Self.usableTheme(profile) }
     }
 
-    /// Tema equipado si el jugador lo tiene desbloqueado (Pizarra: nivel 5; Neón: Plus); si no, el clásico.
+    /// Tema equipado si el jugador lo tiene desbloqueado por nivel (Pizarra: 5; Neón: 10); si no, el clásico.
     static func usableTheme(_ p: Profile?) -> String {
         switch p?.theme {
-        case "pizarra" where (p?.level ?? 0) >= 5: "pizarra"
-        case "neon" where p?.isPlus == true: "neon"
+        case "pizarra" where (p?.level ?? 0) >= StoreManager.themeLevel("pizarra"): "pizarra"
+        case "neon" where (p?.level ?? 0) >= StoreManager.themeLevel("neon"): "neon"
         default: "clasico"
         }
     }

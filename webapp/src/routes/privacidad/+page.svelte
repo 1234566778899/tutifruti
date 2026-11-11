@@ -33,7 +33,7 @@
 		<li><b>Google (Gemini API)</b>: validación de respuestas con IA.</li>
 		<li><b>Google Analytics</b>: estadísticas de visitas de la web. Puedes bloquearlo con el <a href="https://tools.google.com/dlpage/gaoptout" rel="noopener">complemento de inhabilitación</a> o el bloqueo de rastreadores de tu navegador.</li>
 		<li><b>Vercel</b>: alojamiento de la web.</li>
-		<li><b>Apple</b>: Iniciar sesión con Apple y compras dentro de la app de iPhone.</li>
+		<li><b>Apple</b>: Iniciar sesión con Apple en la app de iPhone.</li>
 	</ul>
 
 	<h2>Conservación y borrado</h2>

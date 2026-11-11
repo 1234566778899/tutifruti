@@ -4,13 +4,11 @@ import SwiftUI
 struct TutifrutiApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) private var delegate
     @State private var app = AppState()
-    @State private var store = StoreManager()
 
     var body: some Scene {
         WindowGroup {
             RootView()
                 .environment(app)
-                .environment(store)
                 .onOpenURL { app.handleDeepLink($0) }
                 .onContinueUserActivity(NSUserActivityTypeBrowsingWeb) { activity in
                     if let url = activity.webpageURL { app.handleDeepLink(url) }

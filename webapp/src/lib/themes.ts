@@ -8,11 +8,10 @@ export const THEMES = {
 } as const;
 export type ThemeKey = keyof typeof THEMES;
 
-/** Requisito para usar cada tema: Pizarra desde nivel 5, Neón con Plus. */
+/** Nivel necesario para usar cada tema (todo es gratis): Pizarra 5, Neón 10. Igual que en iOS. */
+export const THEME_LEVEL: Record<ThemeKey, number> = { clasico: 1, pizarra: 5, neon: 10 };
 export function themeUnlocked(key: ThemeKey, p: Profile | null): boolean {
-	if (key === 'pizarra') return (p?.level ?? 0) >= 5;
-	if (key === 'neon') return !!p?.is_plus;
-	return true;
+	return (p?.level ?? 1) >= THEME_LEVEL[key];
 }
 
 export function usableTheme(p: Profile | null): ThemeKey {

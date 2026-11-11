@@ -35,15 +35,15 @@ describe('progresión y salas', () => {
 });
 
 describe('temas', () => {
-	it('Pizarra se desbloquea en nivel 5 y Neón con Plus', () => {
+	it('Pizarra se desbloquea en nivel 5 y Neón en nivel 10', () => {
 		expect(themeUnlocked('pizarra', profile({ level: 4 }))).toBe(false);
 		expect(themeUnlocked('pizarra', profile({ level: 5 }))).toBe(true);
 		expect(themeUnlocked('neon', profile())).toBe(false);
-		expect(themeUnlocked('neon', profile({ is_plus: true }))).toBe(true);
+		expect(themeUnlocked('neon', profile({ level: 10 }))).toBe(true);
 	});
 	it('un tema equipado pero bloqueado vuelve al clásico', () => {
 		expect(usableTheme(profile({ theme: 'neon' }))).toBe('clasico');
-		expect(usableTheme(profile({ theme: 'neon', is_plus: true }))).toBe('neon');
+		expect(usableTheme(profile({ theme: 'neon', level: 10 }))).toBe('neon');
 		expect(usableTheme(profile({ theme: 'inexistente' }))).toBe('clasico');
 		expect(usableTheme(null)).toBe('clasico');
 	});

@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		0B99B1BCF25CDEF40AB6A931 /* StoreViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = D73A5556E390C3A417811023 /* StoreViews.swift */; };
 		0DE8EA164F172438600D04B0 /* Components.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16A24C7D07CE4FC8A061946F /* Components.swift */; };
+		0E827F59967CAF4BB5CE4A4C /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = D33EFAA1F8F0BF907E124FB3 /* PrivacyInfo.xcprivacy */; };
 		0EC890C709BBF6DD30EDF0F8 /* Supa.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C0A43B5E7D168B89769EAA /* Supa.swift */; };
 		0F2BA1D32190AADAED2E26DC /* ResultsViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7938BB5ABDCDE13B51AA3993 /* ResultsViews.swift */; };
 		0F425F22382946311FCAD8F5 /* reveal.wav in Resources */ = {isa = PBXBuildFile; fileRef = 5D52932AD6C6D6894D869F22 /* reveal.wav */; };
@@ -100,6 +101,7 @@
 		B2A45F83104424A2AE19CF74 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C2B69C8AA07D53FC1ED82524 /* stop.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = stop.wav; sourceTree = "<group>"; };
 		C7A5EB3598571E0C7543BC84 /* PushManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushManager.swift; sourceTree = "<group>"; };
+		D33EFAA1F8F0BF907E124FB3 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		D4C0A43B5E7D168B89769EAA /* Supa.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Supa.swift; sourceTree = "<group>"; };
 		D73A5556E390C3A417811023 /* StoreViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreViews.swift; sourceTree = "<group>"; };
 		EEA54E3DB1C0E912C07612DA /* TutifrutiApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TutifrutiApp.swift; sourceTree = "<group>"; };
@@ -298,6 +300,7 @@
 			children = (
 				B2A45F83104424A2AE19CF74 /* Assets.xcassets */,
 				0AF260D44C5EA0C80D86CD80 /* Info.plist */,
+				D33EFAA1F8F0BF907E124FB3 /* PrivacyInfo.xcprivacy */,
 				5AD86DC167FD96CCF192FAE9 /* Tutifruti.entitlements */,
 				89D840809603D48C63491E3E /* App */,
 				CFF4F74445DA975363D83D79 /* Models */,
@@ -396,6 +399,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2EFE55C343A4279BF5D8C5B5 /* Assets.xcassets in Resources */,
+				0E827F59967CAF4BB5CE4A4C /* PrivacyInfo.xcprivacy in Resources */,
 				934786244C012DFABE59F4D5 /* coin.wav in Resources */,
 				187D1217F5D22C92631A45D1 /* count.wav in Resources */,
 				6BA90C89F9F3513E0BC9436E /* doubtful.wav in Resources */,
