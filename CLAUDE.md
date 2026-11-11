@@ -114,7 +114,7 @@ psql "host=aws-0-us-east-1.pooler.supabase.com port=5432 user=postgres.liejnmzxl
 La conexión directa `db.<ref>.supabase.co` es solo IPv6 y no resuelve en esta Mac: usar el pooler.
 
 ## Desplegar Edge Functions
-El CLI está logueado en otra cuenta (no ve este proyecto). Hace falta `supabase login` con la cuenta dueña del proyecto:
+El CLI está logueado con la cuenta dueña (2026-11-11). `send-push` y `app-store` van con `--no-verify-jwt`:
 ```bash
 supabase secrets set GEMINI_API_KEY=... --project-ref liejnmzxlpctqybecrbu
 supabase functions deploy validate-round resolve-dispute categories-ai --project-ref liejnmzxlpctqybecrbu
@@ -144,9 +144,10 @@ sube al repo (`.gitignore`). Proyecto Supabase: `liejnmzxlpctqybecrbu`; la app y
 - [x] Migraciones `20261111000012` a `20261111000017` aplicadas con psql el 2026-11-11 (prueba de humo OK).
 - [ ] `20261111000018_purchases.sql` va **después** de desplegar `app-store` y publicar la app que usa
       `API.verifyPurchase` (quita `grant_item` a los clientes).
-- [ ] **Desplegar Edge Functions** (requiere `supabase login` con la cuenta dueña):
-      `supabase functions deploy validate-round resolve-dispute --project-ref liejnmzxlpctqybecrbu` y
-      `supabase functions deploy send-push app-store --no-verify-jwt --project-ref liejnmzxlpctqybecrbu`.
+- [x] Edge Functions desplegadas el 2026-11-11: `validate-round`, `resolve-dispute` y (con `--no-verify-jwt`)
+      `send-push`, `app-store`. El CLI ya está logueado con la cuenta dueña.
+- [x] Prueba de punta a punta contra producción (`supabase/tests/e2e_round.mjs`, en es y en): ronda con IA (~5–7 s),
+      "Mesa" en ronda J/T marcada inválida por la letra, sala en inglés con `language = en`, RLS oculta la sala privada.
 - [ ] **Push (APNs)**: crear una clave APNs (.p8) en developer.apple.com y configurar secretos `APNS_KEY` (contenido
       del .p8), `APNS_KEY_ID`, `APNS_TEAM_ID=JZ9Z9GWH7P`, `PUSH_WEBHOOK_SECRET`; en la base:
       `select vault.create_secret('<mismo PUSH_WEBHOOK_SECRET>', 'push_webhook_secret');`. Sin eso el trigger no envía nada.
