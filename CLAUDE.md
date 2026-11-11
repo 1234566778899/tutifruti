@@ -145,7 +145,7 @@ sube al repo (`.gitignore`). Proyecto Supabase: `liejnmzxlpctqybecrbu`; la app y
    `update profiles set is_admin = true where username = '<usuario>';`.
 2. **Push**: configurado y probado en sandbox el 2026-11-11. Falta probar la clave de producción con un build de
    TestFlight/App Store (ver "Push (APNs)" abajo).
-3. **App Store**: completar la ficha y enviar a revisión (ver "App Store" abajo). Ya no hay compras.
+3. **App Store**: 1.0 enviada a revisión el 2026-11-11; atender la respuesta de Apple (ver "App Store" abajo).
 4. **SMTP propio** (Resend + `tutifruti.site`) → pegar `supabase/templates/` en Auth → Emails → probar registro y
    "olvidé mi contraseña" en iOS y web.
 5. Probar Safari/iPhone, partida mixta web + iOS y Sign in with Apple.
@@ -158,11 +158,17 @@ sube al repo (`.gitignore`). Proyecto Supabase: `liejnmzxlpctqybecrbu`; la app y
   categorías temáticas para todos. **No aplicar** `20261111000018_purchases.sql`; la función `app-store` queda sin uso.
 - [x] `20261111000020_all_free.sql` aplicada (2026-11-11): `create_room` ya no exige Plus para 12 jugadores y
       `grant_item` quedó revocada para los clientes.
-- Ficha creada en App Store Connect: "Tutifruti AI", es-MX, SKU `tutifruti`. Build **1.0 (1)** subido.
-  Para subir otro: subir `CURRENT_PROJECT_VERSION`, `xcodegen generate`, `xcodebuild archive` (Release) y
-  `xcodebuild -exportArchive` con `ExportOptions.plist` (cambiando `destination` a `upload`).
-- [ ] Pendiente para revisión: aceptar el contrato actualizado del Apple Developer Program (titular), capturas,
-      descripción, clasificación por edad, etiquetas de privacidad y notas para el revisor (se entra como invitado).
+- **Versión 1.0 (build 1) enviada a revisión el 2026-11-11** (ID de Apple `6833576367`). Publicación automática al
+  aprobarse. Ficha: subtítulo "Stop con amigos y árbitro IA", categoría Juegos (Palabras, Familiar) + Entretenimiento,
+  clasificación 4+, gratis en 175 países, privacidad `https://tutifruti.site/privacidad` (6 tipos de datos, uso
+  "Funcionalidad de la app", vinculados, sin rastreo). Notas al revisor: entrar como invitado y jugar con 2 dispositivos
+  o iPhone + web.
+- Para subir otra versión: subir `MARKETING_VERSION`/`CURRENT_PROJECT_VERSION`, `xcodegen generate`, `xcodebuild archive`
+  (Release) y `xcodebuild -exportArchive` con `ExportOptions.plist` cambiando `destination` a `upload`.
+- **Capturas** (`art/appstore/`, 1206×2622): esquema `Screenshots` (`TutifrutiUITests/ScreenshotTests.swift`) +
+  `tools/screenshot_bots.mjs` (mete 2 invitados en la sala, fija la letra M y responde). Correr ambos a la vez con
+  `SHOTS_DIR` y `SERVICE_KEY`; al final borrar la sala y los invitados que imprime `CLEANUP`.
+- [ ] Aceptar el contrato actualizado del Apple Developer Program (titular).
 
 ### Para activar lo implementado el 2026-11-11 (código listo en el repo, falta aplicarlo)
 - [x] Migraciones `20261111000012` a `20261111000017` aplicadas con psql el 2026-11-11 (prueba de humo OK).

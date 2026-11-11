@@ -63,3 +63,25 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.carlosordaz.tutifruti.tests
         DEVELOPMENT_TEAM: JZ9Z9GWH7P
         SWIFT_VERSION: "5.0"
+  TutifrutiUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources: [TutifrutiUITests]
+    dependencies:
+      - target: Tutifruti
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: com.carlosordaz.tutifruti.uitests
+        DEVELOPMENT_TEAM: JZ9Z9GWH7P
+        SWIFT_VERSION: "5.0"
+        TEST_TARGET_NAME: Tutifruti
+schemes:
+  # Capturas de App Store (juega una partida real contra producción): no entra en las pruebas normales.
+  Screenshots:
+    build:
+      targets:
+        Tutifruti: all
+        TutifrutiUITests: [test]
+    test:
+      targets: [TutifrutiUITests]

@@ -48,12 +48,20 @@
 		D3708129362A98AD3D58282A /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = E4CEA836AC7B62DB8943ED53 /* Supabase */; };
 		E931152BAE140B7DFDF243DF /* tap.wav in Resources */ = {isa = PBXBuildFile; fileRef = 29469D620C50A89D9B1090D1 /* tap.wav */; };
 		F3A8C3853CB638EE02ECF1F5 /* GameContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2A12BA6C14EDE393E5C6878 /* GameContainerView.swift */; };
+		FC1B78F4EDFA195194B0E601 /* ScreenshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAFE922643F2AA38050D737D /* ScreenshotTests.swift */; };
 		FC5AEBF79A8B4C445D01F8C0 /* HomeViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CEC09280FB353B5F1333EDE /* HomeViews.swift */; };
 		FD837D86E45FF838EFC2FC13 /* GameStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB1308F655CC4C4992FC9C75 /* GameStore.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
 		6A41144B97023019B73480EE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 92606241FE559E5E9DFAC96B /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7E0C8EE6EF223E69936F637F;
+			remoteInfo = Tutifruti;
+		};
+		D44FBB1AC2B555CE8FDE2935 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 92606241FE559E5E9DFAC96B /* Project object */;
 			proxyType = 1;
@@ -99,11 +107,13 @@
 		A2A12BA6C14EDE393E5C6878 /* GameContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameContainerView.swift; sourceTree = "<group>"; };
 		AE91F65CF956536BA4C21532 /* RoomViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomViews.swift; sourceTree = "<group>"; };
 		B2A45F83104424A2AE19CF74 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		B7D3D508BD2D4DEA87DC219A /* TutifrutiUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = TutifrutiUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C2B69C8AA07D53FC1ED82524 /* stop.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = stop.wav; sourceTree = "<group>"; };
 		C7A5EB3598571E0C7543BC84 /* PushManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushManager.swift; sourceTree = "<group>"; };
 		D33EFAA1F8F0BF907E124FB3 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		D4C0A43B5E7D168B89769EAA /* Supa.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Supa.swift; sourceTree = "<group>"; };
 		D73A5556E390C3A417811023 /* StoreViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreViews.swift; sourceTree = "<group>"; };
+		EAFE922643F2AA38050D737D /* ScreenshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotTests.swift; sourceTree = "<group>"; };
 		EEA54E3DB1C0E912C07612DA /* TutifrutiApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TutifrutiApp.swift; sourceTree = "<group>"; };
 		FA9C1F8C33901F6CC1CF7A34 /* notify.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = notify.wav; sourceTree = "<group>"; };
 		FB1308F655CC4C4992FC9C75 /* GameStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameStore.swift; sourceTree = "<group>"; };
@@ -128,6 +138,7 @@
 			children = (
 				EE252CB5E2CA7D9171802EA6 /* Tutifruti */,
 				E6F67D05E880BFC2B80DAB0E /* TutifrutiTests */,
+				48CB234F8F393260D6C2BCAB /* TutifrutiUITests */,
 				8F81D3262D36DDD10C10211C /* Products */,
 			);
 			sourceTree = "<group>";
@@ -156,6 +167,14 @@
 				34850E49B0196C4CEDAD3E92 /* FriendsViews.swift */,
 			);
 			path = Friends;
+			sourceTree = "<group>";
+		};
+		48CB234F8F393260D6C2BCAB /* TutifrutiUITests */ = {
+			isa = PBXGroup;
+			children = (
+				EAFE922643F2AA38050D737D /* ScreenshotTests.swift */,
+			);
+			path = TutifrutiUITests;
 			sourceTree = "<group>";
 		};
 		6494917396201329FA80C7B1 /* Auth */ = {
@@ -210,6 +229,7 @@
 			children = (
 				5D36D140D076F03AC89E6CD4 /* Tutifruti.app */,
 				4C574859C71B9AA995A58B14 /* TutifrutiTests.xctest */,
+				B7D3D508BD2D4DEA87DC219A /* TutifrutiUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -314,6 +334,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		288F2C1C3551A849E11643DB /* TutifrutiUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 19523BAF589095EF793DF834 /* Build configuration list for PBXNativeTarget "TutifrutiUITests" */;
+			buildPhases = (
+				6BD93A0C505AAD9343C018C0 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				0A9A95A9ADC9CD919BACB646 /* PBXTargetDependency */,
+			);
+			name = TutifrutiUITests;
+			packageProductDependencies = (
+			);
+			productName = TutifrutiUITests;
+			productReference = B7D3D508BD2D4DEA87DC219A /* TutifrutiUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 		7E0C8EE6EF223E69936F637F /* Tutifruti */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 7875A7D656D15980E24E0280 /* Build configuration list for PBXNativeTarget "Tutifruti" */;
@@ -361,6 +399,10 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
+					288F2C1C3551A849E11643DB = {
+						DevelopmentTeam = JZ9Z9GWH7P;
+						TestTargetID = 7E0C8EE6EF223E69936F637F;
+					};
 					7E0C8EE6EF223E69936F637F = {
 						DevelopmentTeam = JZ9Z9GWH7P;
 						ProvisioningStyle = Automatic;
@@ -389,6 +431,7 @@
 			targets = (
 				7E0C8EE6EF223E69936F637F /* Tutifruti */,
 				802EF856F0504FA5567C4DFB /* TutifrutiTests */,
+				288F2C1C3551A849E11643DB /* TutifrutiUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -452,6 +495,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		6BD93A0C505AAD9343C018C0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FC1B78F4EDFA195194B0E601 /* ScreenshotTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		E6FBEF2A94990A013F9892A9 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -463,6 +514,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		0A9A95A9ADC9CD919BACB646 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7E0C8EE6EF223E69936F637F /* Tutifruti */;
+			targetProxy = D44FBB1AC2B555CE8FDE2935 /* PBXContainerItemProxy */;
+		};
 		5B9736254E8707E973664230 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 7E0C8EE6EF223E69936F637F /* Tutifruti */;
@@ -510,6 +566,25 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Tutifruti.app/Tutifruti";
+			};
+			name = Release;
+		};
+		67C778CD34BDA6D31923613C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEVELOPMENT_TEAM = JZ9Z9GWH7P;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.carlosordaz.tutifruti.uitests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Tutifruti;
 			};
 			name = Release;
 		};
@@ -651,6 +726,25 @@
 			};
 			name = Debug;
 		};
+		EDA986D364286551462E1754 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEVELOPMENT_TEAM = JZ9Z9GWH7P;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.carlosordaz.tutifruti.uitests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Tutifruti;
+			};
+			name = Debug;
+		};
 		FE19E0CC80C961B73D54F4EE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -677,6 +771,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		19523BAF589095EF793DF834 /* Build configuration list for PBXNativeTarget "TutifrutiUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EDA986D364286551462E1754 /* Debug */,
+				67C778CD34BDA6D31923613C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
 		32B435C24EEB37B4D0F30256 /* Build configuration list for PBXNativeTarget "TutifrutiTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
