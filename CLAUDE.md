@@ -143,8 +143,8 @@ sube al repo (`.gitignore`). Proyecto Supabase: `liejnmzxlpctqybecrbu`; la app y
 ### Próxima sesión: empezar aquí (en este orden)
 1. **Moderador** (lo hace el usuario; Claude no puede darse permisos): en el SQL Editor de Supabase
    `update profiles set is_admin = true where username = '<usuario>';`.
-2. **Push**: el usuario crea la clave APNs (.p8) en developer.apple.com (Keys → Apple Push Notifications service) y
-   comparte Key ID; Claude configura los secretos de `send-push` y el secreto de Vault (ver abajo) y prueba en un iPhone.
+2. **Push**: configurado y probado en sandbox el 2026-11-11. Falta probar la clave de producción con un build de
+   TestFlight/App Store (ver "Push (APNs)" abajo).
 3. **Compras**: productos en App Store Connect + URL de notificaciones v2; probar en sandbox; tras publicar la app,
    aplicar `20261111000018_purchases.sql`.
 4. **SMTP propio** (Resend + `tutifruti.site`) → pegar `supabase/templates/` en Auth → Emails → probar registro y
@@ -161,9 +161,15 @@ sube al repo (`.gitignore`). Proyecto Supabase: `liejnmzxlpctqybecrbu`; la app y
       `send-push`, `app-store`. El CLI ya está logueado con la cuenta dueña.
 - [x] Prueba de punta a punta contra producción (`supabase/tests/e2e_round.mjs`, en es y en): ronda con IA (~5–7 s),
       "Mesa" en ronda J/T marcada inválida por la letra, sala en inglés con `language = en`, RLS oculta la sala privada.
-- [ ] **Push (APNs)**: crear una clave APNs (.p8) en developer.apple.com y configurar secretos `APNS_KEY` (contenido
-      del .p8), `APNS_KEY_ID`, `APNS_TEAM_ID=JZ9Z9GWH7P`, `PUSH_WEBHOOK_SECRET`; en la base:
-      `select vault.create_secret('<mismo PUSH_WEBHOOK_SECRET>', 'push_webhook_secret');`. Sin eso el trigger no envía nada.
+- [x] **Push (APNs)** configurado el 2026-11-11. El equipo ya no admite más claves "Team Scoped", así que hay dos
+      claves "Topic Specific" (`com.carlosordaz.tutifruti`): **Tutifruti APNs** `4X4V2V4X8V` (Production) y
+      **Tutifruti APNs Sandbox** `JX6MH3S2S4`. `send-push` elige la clave según `push_tokens.sandbox`. Secretos:
+      `APNS_KEY`/`APNS_KEY_ID` (producción), `APNS_KEY_SANDBOX`/`APNS_KEY_ID_SANDBOX`, `APNS_TEAM_ID=JZ9Z9GWH7P`,
+      `PUSH_WEBHOOK_SECRET` (= secreto `push_webhook_secret` de Vault). Los .p8 están en `~/.private_keys/` (no se
+      pueden volver a descargar). Verificado: APNs acepta ambas claves y la función responde.
+- [x] **Push** probado en un iPhone con build de desarrollo (2026-11-11): token registrado y aviso enviado por el
+      trigger real (`sent: 1`).
+- [ ] **Push**: probar la clave de producción con un build de TestFlight/App Store.
 - [ ] **Compras**: en App Store Connect → App Information → App Store Server Notifications (v2), URL
       `https://liejnmzxlpctqybecrbu.supabase.co/functions/v1/app-store` (producción y sandbox).
 - [x] Auth → URL Configuration: redirect `tutifruti://**` añadido (2026-11-11).

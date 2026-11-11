@@ -1,22 +1,34 @@
 // Envía una notificación (fila de public.notifications) a los dispositivos iOS del jugador vía APNs.
 // La invoca el trigger push_notification (pg_net) con la cabecera x-push-secret.
-// Secretos: PUSH_WEBHOOK_SECRET, APNS_KEY (contenido del .p8), APNS_KEY_ID, APNS_TEAM_ID, APNS_BUNDLE_ID (opcional).
+// Secretos: PUSH_WEBHOOK_SECRET, APNS_TEAM_ID, APNS_BUNDLE_ID (opcional) y una clave por entorno (las claves
+// "Topic Specific" de Apple valen para un solo entorno): APNS_KEY + APNS_KEY_ID (producción) y
+// APNS_KEY_SANDBOX + APNS_KEY_ID_SANDBOX (desarrollo). Si falta la de sandbox se usa la de producción
+// (sirve cuando la clave es "Sandbox & Production").
 import { importPKCS8, SignJWT } from "npm:jose@5";
 import { json, serviceClient } from "../_shared/ai.ts";
 
 const BUNDLE = Deno.env.get("APNS_BUNDLE_ID") ?? "com.carlosordaz.tutifruti";
-let cached: { jwt: string; at: number } | null = null;
+const cached: Record<string, { jwt: string; at: number }> = {};
 
-async function providerToken(): Promise<string> {
+function credentials(sandbox: boolean): { key: string; kid: string } | null {
+  const key = (sandbox && Deno.env.get("APNS_KEY_SANDBOX")) || Deno.env.get("APNS_KEY");
+  const kid = (sandbox && Deno.env.get("APNS_KEY_SANDBOX") && Deno.env.get("APNS_KEY_ID_SANDBOX")) || Deno.env.get("APNS_KEY_ID");
+  return key && kid ? { key, kid } : null;
+}
+
+async function providerToken(sandbox: boolean): Promise<string | null> {
+  const cred = credentials(sandbox);
+  if (!cred) return null;
   // APNs acepta el mismo token hasta 60 min; se renueva a los 50.
-  if (cached && Date.now() - cached.at < 50 * 60_000) return cached.jwt;
-  const key = await importPKCS8(Deno.env.get("APNS_KEY")!.replace(/\\n/g, "\n"), "ES256");
+  const hit = cached[cred.kid];
+  if (hit && Date.now() - hit.at < 50 * 60_000) return hit.jwt;
+  const key = await importPKCS8(cred.key.replace(/\\n/g, "\n"), "ES256");
   const jwt = await new SignJWT({})
-    .setProtectedHeader({ alg: "ES256", kid: Deno.env.get("APNS_KEY_ID")! })
+    .setProtectedHeader({ alg: "ES256", kid: cred.kid })
     .setIssuer(Deno.env.get("APNS_TEAM_ID")!)
     .setIssuedAt()
     .sign(key);
-  cached = { jwt, at: Date.now() };
+  cached[cred.kid] = { jwt, at: Date.now() };
   return jwt;
 }
 
@@ -25,7 +37,7 @@ type Notif = { id: number; user_id: string; kind: string; title: string; body: s
 Deno.serve(async (req) => {
   const secret = Deno.env.get("PUSH_WEBHOOK_SECRET");
   if (!secret || req.headers.get("x-push-secret") !== secret) return json({ error: "forbidden" }, 403);
-  if (!Deno.env.get("APNS_KEY")) return json({ status: "apns-not-configured" });
+  if (!Deno.env.get("APNS_KEY") && !Deno.env.get("APNS_KEY_SANDBOX")) return json({ status: "apns-not-configured" });
   try {
     const n = (await req.json()) as Notif;
     const db = serviceClient();
@@ -44,10 +56,10 @@ Deno.serve(async (req) => {
       kind: n.kind,
       ...n.payload,
     });
-    const jwt = await providerToken();
-
     let sent = 0;
     for (const t of tokens) {
+      const jwt = await providerToken(t.sandbox);
+      if (!jwt) continue;
       const host = t.sandbox ? "api.sandbox.push.apple.com" : "api.push.apple.com";
       const res = await fetch(`https://${host}/3/device/${t.token}`, {
         method: "POST",
