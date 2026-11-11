@@ -49,7 +49,7 @@ https://www.figma.com/design/P8AAzV4oac2pY8r4GKSKiQ/tutifruti?node-id=3260-2
   revocado, ya amigos, solicitud pendiente, límite 20/hora y 500 amigos). Se comparte desde `FriendLinkCard` (Amigos).
 - Enlace para compartir: `https://tutifruti-ai.vercel.app/j/TUTI-XXXX` (`Config.inviteURL`). Universal Link
   (`applinks:tutifruti-ai.vercel.app`, AASA en `web/.well-known/`) abre la app y se une sola; si no, la página `web/join.html`
-  intenta `tutifruti://join/CODE` y muestra el código. Desplegar con `cd web && npx vercel deploy --prod` (proyecto `tutifruti-ai`).
+  intenta `tutifruti://join/CODE` y muestra el código. Proyecto Vercel `tutifruti-ai` (root `web/`), se despliega solo al hacer push a `main` si cambió `web/`.
 - Reconexión: al volver a primer plano `GameStore.appBecameActive()` → `resync()` (reloj, latido, canal realtime, estado,
   reenvío de respuestas); `healthCheck()` reconecta con backoff si el canal cae y recarga cada 10 s como respaldo.
   `AppState.sceneBecameActive()` reactiva notificaciones y vuelve a la partida en curso. Errores de red no muestran alertas.
@@ -61,7 +61,12 @@ https://www.figma.com/design/P8AAzV4oac2pY8r4GKSKiQ/tutifruti?node-id=3260-2
 - Responsive: una columna en móvil; en ≥1024 px la sala muestra jugadores y chat en un panel lateral.
 - Dev: `cd webapp && npm run dev`. Verificar: `npx svelte-check` y `npm run build`.
 - Producción: proyecto Vercel `tutifruti-web` → **https://tutifruti.site** (+ `www`), dominio de Namecheap con
-  nameservers `ns1/ns2.vercel-dns.com`. Desplegar con `cd webapp && npx vercel deploy --prod`.
+  nameservers `ns1/ns2.vercel-dns.com`. Despliegue **automático**: cada push a `main` en GitHub (`1234566778899/tutifruti`) despliega en Vercel
+  (root `webapp/`; solo construye si cambió esa carpeta).
+
+## Repositorio
+- GitHub **público**: https://github.com/1234566778899/tutifruti (rama `main`). Nunca subir claves: van en `CLAUDE.local.md`
+  (ignorado). La publishable key de Supabase sí puede estar en el código.
 
 ## Estructura
 - `Tutifruti/` — código de la app (App, Models, Services, Views/<módulo>).
