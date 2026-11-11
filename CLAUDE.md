@@ -186,7 +186,10 @@ sube al repo (`.gitignore`). Proyecto Supabase: `liejnmzxlpctqybecrbu`; la app y
 - [ ] Publicar la app en App Store y enlazarla desde la landing (hoy dice "también en iPhone" sin enlace).
 - [ ] Web Push (opcional).
 - [ ] La UI sigue en español aunque el idioma de juego sea inglés/portugués (solo cambia la validación y las letras).
-- [ ] SEO: dar de alta https://tutifruti.site en Google Search Console y enviar el `sitemap.xml`.
+- [ ] Search Console: la propiedad de **dominio** `tutifruti.site` quedó creada sin verificar; para verificarla, añadir en
+      Vercel → Domains → tutifruti.site un TXT en la raíz con
+      `google-site-verification=jF0lvz9nx2PJJXsV2DBnR-lO50UC1f45Kj9OsheDsms` y pulsar Verificar (cubre también `www`).
+- [ ] Opcional: vincular Search Console con la propiedad de Analytics (Administrar → Vinculaciones de productos).
 
 ### Implementado el 2026-11-11 (base aplicada; faltan las Edge Functions y la config de push/compras, ver arriba)
 - [x] Guardia de letra en el servidor (`_finish_validation`) y en `validate-round` (Ñ ≠ N); el prompt revisa la 1.ª letra.
@@ -209,6 +212,11 @@ sube al repo (`.gitignore`). Proyecto Supabase: `liejnmzxlpctqybecrbu`; la app y
       `.github/workflows/ci.yml` (web, Edge Functions, iOS).
 - [x] Migraciones renombradas a formato timestamp del CLI.
 - [x] Web revisada a 375 px: sin desbordamiento horizontal en landing, páginas legales y `/jugar`.
+- [x] **Google Analytics**: propiedad "Tutifruti AI" (cuenta de Analytics existente, zona Ciudad de México), flujo web
+      `https://tutifruti.site`, etiqueta de Google `GTM-MC4QR8DM` en `webapp/src/app.html` (solo carga en *.tutifruti.site).
+      La política de privacidad lo menciona.
+- [x] **Search Console**: propiedad de prefijo `https://tutifruti.site/` verificada con
+      `webapp/static/google088833cd70b12589.html` (no borrar) y `sitemap.xml` enviado (2026-11-11).
 
 ### Hecho recientemente
 - [x] Edge Functions desplegadas y `GEMINI_API_KEY` configurado (2026-11-10).
