@@ -15,6 +15,7 @@
 		<li><b>Partidas:</b> salas en las que participas, respuestas, puntos, impugnaciones, reacciones y mensajes del chat de la sala.</li>
 		<li><b>Social:</b> amistades, enlaces de amistad, notificaciones dentro de la app y reportes o silencios que hagas a otros jugadores.</li>
 		<li><b>Técnicos:</b> la última vez que estuviste conectado (para saber quién sigue en la partida) y preferencias como sonidos o vibración, que se guardan en tu dispositivo.</li>
+		<li><b>Uso de la web:</b> en tutifruti.site medimos visitas de forma agregada con Google Analytics (páginas vistas, tipo de dispositivo, país aproximado y de dónde llegaste). Usa cookies propias de Google Analytics; no le enviamos tu correo, tu nombre de usuario ni tus respuestas.</li>
 	</ul>
 
 	<h2>Para qué los usamos</h2>
@@ -22,6 +23,7 @@
 		<li>Hacer funcionar el juego: salas, rondas, puntuación, chat, amigos y reconexión.</li>
 		<li>Validar respuestas: el texto de las respuestas de cada ronda y sus categorías se envía a un modelo de inteligencia artificial (Google Gemini) para decidir si son válidas. No enviamos tu correo ni tu nombre real.</li>
 		<li>Moderar: revisar reportes de comportamiento abusivo.</li>
+		<li>Mejorar la web: saber cuántas personas la visitan y qué páginas usan (Google Analytics).</li>
 	</ul>
 	<p>No vendemos tus datos ni mostramos publicidad personalizada.</p>
 
@@ -29,6 +31,7 @@
 	<ul>
 		<li><b>Supabase</b>: base de datos, autenticación y funciones del servidor (Estados Unidos).</li>
 		<li><b>Google (Gemini API)</b>: validación de respuestas con IA.</li>
+		<li><b>Google Analytics</b>: estadísticas de visitas de la web. Puedes bloquearlo con el <a href="https://tools.google.com/dlpage/gaoptout" rel="noopener">complemento de inhabilitación</a> o el bloqueo de rastreadores de tu navegador.</li>
 		<li><b>Vercel</b>: alojamiento de la web.</li>
 		<li><b>Apple</b>: Iniciar sesión con Apple y compras dentro de la app de iPhone.</li>
 	</ul>
