@@ -197,14 +197,23 @@ final class GameStore {
         let playerChanges = ch.postgresChange(AnyAction.self, schema: "public", table: "room_players", filter: .eq("room_id", value: roomId))
         let roundChanges = ch.postgresChange(AnyAction.self, schema: "public", table: "rounds", filter: .eq("room_id", value: roomId))
         let chatInserts = ch.postgresChange(InsertAction.self, schema: "public", table: "chat_messages", filter: .eq("room_id", value: roomId))
-        let reactionChanges = ch.postgresChange(AnyAction.self, schema: "public", table: "reactions")
-        let disputeChanges = ch.postgresChange(AnyAction.self, schema: "public", table: "disputes")
+        // Filtradas por sala: sin filtro, Realtime comprueba el permiso de todos los conectados en cada cambio.
+        let reactionChanges = ch.postgresChange(AnyAction.self, schema: "public", table: "reactions", filter: .eq("room_id", value: roomId))
+        let disputeChanges = ch.postgresChange(AnyAction.self, schema: "public", table: "disputes", filter: .eq("room_id", value: roomId))
         // Si falla, healthCheck reintenta con espera creciente (sin molestar con alertas).
         try? await ch.subscribeWithError()
         channel = ch
 
         tasks.append(Task { [weak self] in for await _ in roomChanges { self?.scheduleRefresh() } })
-        tasks.append(Task { [weak self] in for await _ in playerChanges { self?.scheduleRefresh() } })
+        tasks.append(Task { [weak self] in
+            for await change in playerChanges {
+                guard let self else { return }
+                // El latido de cada jugador (cada 20 s) solo cambia last_seen: se aplica en local sin recargar la sala.
+                if case .update(let u) = change, let row = try? u.decodeRecord(as: PlayerRow.self, decoder: Coders.decoder),
+                   self.applyHeartbeat(row) { continue }
+                self.scheduleRefresh()
+            }
+        })
         tasks.append(Task { [weak self] in for await _ in roundChanges { self?.scheduleRefresh() } })
         tasks.append(Task { [weak self] in
             for await insert in chatInserts {
@@ -228,6 +237,28 @@ final class GameStore {
                 await self.loadResults(rid, force: true)
             }
         })
+    }
+
+    /// Fila de room_players tal como llega por Realtime (sin el perfil).
+    private struct PlayerRow: Decodable {
+        let userId: UUID
+        let ready: Bool
+        let score: Int
+        let leftAt: Date?
+        let lastSeen: Date
+        let disputesLeft: Int
+        let finalRank: Int?
+        let xpGained: Int?
+    }
+
+    /// Si el cambio es solo el latido, actualiza `lastSeen` y devuelve true (no hace falta recargar).
+    private func applyHeartbeat(_ row: PlayerRow) -> Bool {
+        guard let i = players.firstIndex(where: { $0.userId == row.userId }) else { return false }
+        let p = players[i]
+        guard p.ready == row.ready, p.score == row.score, p.leftAt == row.leftAt, p.disputesLeft == row.disputesLeft,
+              p.finalRank == row.finalRank, p.xpGained == row.xpGained else { return false }
+        players[i].lastSeen = row.lastSeen
+        return true
     }
 
     private func scheduleRefresh() {

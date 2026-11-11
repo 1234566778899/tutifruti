@@ -105,23 +105,18 @@ Deno.serve(async (req) => {
       }
     }
 
-    for (const a of empty) {
-      await db.from("answers").update({ status: "empty", reason: "Sin respuesta.", checks: null })
-        .match({ round_id, user_id: a.user_id, category: a.category }).eq("status", "pending");
-    }
-    for (const a of filled) {
-      const v = verdicts.get(key(a));
-      if (!v) continue; // queda pendiente → la validación básica la completa si hace falta
-      await db.from("answers").update({ status: v.status, reason: v.reason, checks: v.checks })
-        .match({ round_id, user_id: a.user_id, category: a.category }).eq("status", "pending");
-    }
-
-    const { count } = await db.from("answers").select("*", { count: "exact", head: true })
-      .eq("round_id", round_id).eq("status", "pending");
-    if ((count ?? 0) > 0) return json({ status: "partial" }, 502);
-
-    const { error: e2 } = await db.rpc("_finish_validation", { p_round: round_id, p_ai: true });
+    // Todos los veredictos en una sola llamada; si no queda nada pendiente, la misma RPC puntúa la ronda.
+    const updates = [
+      ...empty.map((a) => ({ user_id: a.user_id, category: a.category, status: "empty", reason: "Sin respuesta.", checks: null })),
+      ...filled.flatMap((a) => {
+        const v = verdicts.get(key(a));
+        // sin veredicto queda pendiente → la validación básica la completa si hace falta
+        return v ? [{ user_id: a.user_id, category: a.category, status: v.status, reason: v.reason, checks: v.checks }] : [];
+      }),
+    ];
+    const { data: pending, error: e2 } = await db.rpc("_apply_verdicts", { p_round: round_id, p_verdicts: updates });
     if (e2) throw e2;
+    if ((pending ?? 0) > 0) return json({ status: "partial" }, 502);
     return json({ status: "ok", evaluated: unique.length });
   } catch (err) {
     console.error(err);

@@ -151,20 +151,38 @@ export class Game {
 		const ch = supabase.channel(`room-${this.roomId}-${Math.floor(Math.random() * 99999)}`);
 		const refresh = () => this.scheduleRefresh();
 		ch.on('postgres_changes', { event: '*', schema: 'public', table: 'rooms', filter: `id=eq.${this.roomId}` }, refresh)
-			.on('postgres_changes', { event: '*', schema: 'public', table: 'room_players', filter: `room_id=eq.${this.roomId}` }, refresh)
+			.on('postgres_changes', { event: '*', schema: 'public', table: 'room_players', filter: `room_id=eq.${this.roomId}` }, (p) => {
+				// El latido de cada jugador (cada 20 s) solo cambia last_seen: se aplica en local sin recargar la sala.
+				if (p.eventType === 'UPDATE' && this.applyHeartbeat(p.new as RoomPlayer)) return;
+				refresh();
+			})
 			.on('postgres_changes', { event: '*', schema: 'public', table: 'rounds', filter: `room_id=eq.${this.roomId}` }, refresh)
 			.on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chat_messages', filter: `room_id=eq.${this.roomId}` }, (p) => {
 				const m = p.new as ChatMessage;
 				if (!this.chat.some((x) => x.id === m.id)) this.chat = [...this.chat, m];
 				if (!this.chatOpen && m.user_id !== this.me && m.kind === 'msg' && !(m.user_id && app.muted.has(m.user_id))) { this.unreadChat += 1; this.incomingMessage = m; }
 			})
-			.on('postgres_changes', { event: '*', schema: 'public', table: 'reactions' }, (p) => {
+			// Filtrada por sala: sin filtro, Realtime comprueba el permiso de todos los conectados en cada cambio.
+			.on('postgres_changes', { event: '*', schema: 'public', table: 'reactions', filter: `room_id=eq.${this.roomId}` }, (p) => {
 				const rid = this.currentRound?.id;
 				const row = (p.new ?? p.old) as Partial<Reaction>;
 				if (rid && row.round_id === rid) API.reactions(rid).then((r) => (this.reactions = r)).catch(() => {});
 			})
 			.subscribe();
 		this.channel = ch;
+	}
+
+	/** Si el cambio es solo el latido, actualiza last_seen y devuelve true (no hace falta recargar). */
+	private applyHeartbeat(row: RoomPlayer): boolean {
+		const i = this.players.findIndex((x) => x.user_id === row.user_id);
+		if (i < 0) return false;
+		const p = this.players[i];
+		const same = p.ready === row.ready && p.score === row.score && p.disputes_left === row.disputes_left
+			&& p.final_rank === row.final_rank && p.xp_gained === row.xp_gained
+			&& (p.left_at ? new Date(p.left_at).getTime() : null) === (row.left_at ? new Date(row.left_at).getTime() : null);
+		if (!same) return false;
+		this.players[i] = { ...p, last_seen: row.last_seen };
+		return true;
 	}
 
 	private scheduleRefresh() {

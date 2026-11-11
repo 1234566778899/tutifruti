@@ -170,6 +170,11 @@ sube al repo (`.gitignore`). Proyecto Supabase: `liejnmzxlpctqybecrbu`; la app y
 - [x] **Push** probado en un iPhone con build de desarrollo (2026-11-11): token registrado y aviso enviado por el
       trigger real (`sent: 1`).
 - [ ] **Push**: probar la clave de producción con un build de TestFlight/App Store.
+- [x] **Escala** (2026-11-11): migración `20261111000019_scale.sql` aplicada (`_apply_verdicts`, `room_id` en
+      `reactions`/`disputes` para filtrar Realtime por sala, `answers`/`friendships` fuera de la publicación, índices).
+      Clientes: el latido (`room_players.last_seen`) se aplica en local sin recargar la sala.
+- [ ] **Escala**: falta desplegar `validate-round` (usa `_apply_verdicts`: una escritura por ronda en vez de una por
+      respuesta). La versión desplegada sigue funcionando con el método anterior.
 - [ ] **Compras**: en App Store Connect → App Information → App Store Server Notifications (v2), URL
       `https://liejnmzxlpctqybecrbu.supabase.co/functions/v1/app-store` (producción y sandbox).
 - [x] Auth → URL Configuration: redirect `tutifruti://**` añadido (2026-11-11).
