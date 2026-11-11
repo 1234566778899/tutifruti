@@ -140,6 +140,19 @@ sube al repo (`.gitignore`). Proyecto Supabase: `liejnmzxlpctqybecrbu`; la app y
 
 ## Pendientes (estado al 2026-11-11)
 
+### Próxima sesión: empezar aquí (en este orden)
+1. **Moderador** (lo hace el usuario; Claude no puede darse permisos): en el SQL Editor de Supabase
+   `update profiles set is_admin = true where username = '<usuario>';`.
+2. **Push**: el usuario crea la clave APNs (.p8) en developer.apple.com (Keys → Apple Push Notifications service) y
+   comparte Key ID; Claude configura los secretos de `send-push` y el secreto de Vault (ver abajo) y prueba en un iPhone.
+3. **Compras**: productos en App Store Connect + URL de notificaciones v2; probar en sandbox; tras publicar la app,
+   aplicar `20261111000018_purchases.sql`.
+4. **SMTP propio** (Resend + `tutifruti.site`) → pegar `supabase/templates/` en Auth → Emails → probar registro y
+   "olvidé mi contraseña" en iOS y web.
+5. Probar Safari/iPhone, partida mixta web + iOS y Sign in with Apple.
+6. Opcional/usuario: TXT de Search Console en Vercel (Claude no puede tocar DNS), `contacto@tutifruti.site`, Apple en
+   la web, rotar claves.
+
 ### Para activar lo implementado el 2026-11-11 (código listo en el repo, falta aplicarlo)
 - [x] Migraciones `20261111000012` a `20261111000017` aplicadas con psql el 2026-11-11 (prueba de humo OK).
 - [ ] `20261111000018_purchases.sql` va **después** de desplegar `app-store` y publicar la app que usa
@@ -191,7 +204,7 @@ sube al repo (`.gitignore`). Proyecto Supabase: `liejnmzxlpctqybecrbu`; la app y
       `google-site-verification=jF0lvz9nx2PJJXsV2DBnR-lO50UC1f45Kj9OsheDsms` y pulsar Verificar (cubre también `www`).
 - [x] Search Console vinculado con la propiedad de Analytics "Tutifruti AI" (2026-11-11).
 
-### Implementado el 2026-11-11 (base aplicada; faltan las Edge Functions y la config de push/compras, ver arriba)
+### Implementado el 2026-11-11 (base y Edge Functions en producción; falta config de push/compras, ver arriba)
 - [x] Guardia de letra en el servidor (`_finish_validation`) y en `validate-round` (Ñ ≠ N); el prompt revisa la 1.ª letra.
 - [x] RLS: salas/jugadores visibles solo para miembros (o si la sala es pública); rondas solo para miembros.
 - [x] "Amigo conectado" desde `heartbeat` (vuelve tras ≥ 15 min; 1 aviso cada 2 h por amigo). Temporadas retiradas:
