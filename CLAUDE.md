@@ -173,8 +173,8 @@ sube al repo (`.gitignore`). Proyecto Supabase: `liejnmzxlpctqybecrbu`; la app y
 - [x] **Escala** (2026-11-11): migración `20261111000019_scale.sql` aplicada (`_apply_verdicts`, `room_id` en
       `reactions`/`disputes` para filtrar Realtime por sala, `answers`/`friendships` fuera de la publicación, índices).
       Clientes: el latido (`room_players.last_seen`) se aplica en local sin recargar la sala.
-- [ ] **Escala**: falta desplegar `validate-round` (usa `_apply_verdicts`: una escritura por ronda en vez de una por
-      respuesta). La versión desplegada sigue funcionando con el método anterior.
+- [x] **Escala**: `validate-round` desplegada con `_apply_verdicts` (una escritura por ronda) y prueba de punta a
+      punta OK (2026-11-11).
 - [ ] **Compras**: en App Store Connect → App Information → App Store Server Notifications (v2), URL
       `https://liejnmzxlpctqybecrbu.supabase.co/functions/v1/app-store` (producción y sandbox).
 - [x] Auth → URL Configuration: redirect `tutifruti://**` añadido (2026-11-11).
