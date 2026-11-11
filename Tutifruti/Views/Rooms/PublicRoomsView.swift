@@ -108,6 +108,9 @@ struct PublicRoomRow: View {
                     Label("\(room.roundsTotal)", systemImage: "arrow.triangle.2.circlepath")
                     Label("\(room.roundSeconds) s", systemImage: "timer")
                     Label("\(room.categories.count)", systemImage: "square.grid.2x2")
+                    if let lang = room.language, lang != "es" {
+                        Label(lang.uppercased(), systemImage: "globe")
+                    }
                 }
                 .font(.caption2.weight(.heavy))
                 .foregroundStyle(.white.opacity(0.65))

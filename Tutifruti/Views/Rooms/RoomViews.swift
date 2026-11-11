@@ -631,6 +631,10 @@ struct LobbyView: View {
                                 ruleStat("timer", "\(room.roundSeconds)s", "por ronda")
                                 ruleStat("hand.raised.fill", "\(room.stopSeconds)s", "tras STOP")
                             }
+                            if let lang = room.language, lang != "es" {
+                                Label("Se juega en \(GameLanguage.name(lang)): la IA valida respuestas en ese idioma.", systemImage: "globe")
+                                    .font(.caption.weight(.semibold)).foregroundStyle(Game.lemon)
+                            }
                             FlowChips(items: room.categories)
                         }
                     }

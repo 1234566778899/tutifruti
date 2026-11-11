@@ -3,13 +3,14 @@ export interface Profile {
 	total_points: number; games_played: number; games_won: number; best_score: number;
 	win_streak: number; valid_answers?: number; is_plus: boolean; current_room: string | null; last_seen: string;
 	notif_prefs?: Record<string, boolean> | null; username_changed_at?: string | null; created_at?: string;
+	theme?: string; language?: string; is_admin?: boolean; banned_until?: string | null;
 }
 export interface Room {
 	id: string; code: string; name: string; host_id: string | null; is_public: boolean; ranked: boolean;
 	status: 'waiting' | 'playing' | 'finished' | 'cancelled'; max_players: number; min_players: number;
 	rounds_total: number; round_seconds: number; stop_seconds: number; exclude_hard: boolean;
 	categories: string[]; allow_custom: boolean; current_round: number; used_letters: string[];
-	starts_at: string | null; created_at: string;
+	starts_at: string | null; created_at: string; language?: string;
 }
 export interface RoomPlayer {
 	room_id: string; user_id: string; joined_at: string; ready: boolean; score: number;
@@ -49,7 +50,7 @@ export interface ChatMessage { id: number; room_id: string; user_id: string | nu
 export interface PublicRoom {
 	room_id: string; code: string; name: string; host_id: string; host_name: string; host_avatar: string;
 	host_level: number; players: number; max_players: number; rounds_total: number; round_seconds: number;
-	categories: string[]; exclude_hard: boolean; created_at: string; is_member: boolean;
+	categories: string[]; exclude_hard: boolean; created_at: string; is_member: boolean; language?: string;
 }
 export interface Category { id: string; name: string; kind: 'default' | 'thematic' | 'custom'; theme: string | null; }
 export interface FriendRow {
@@ -64,3 +65,15 @@ export const isConnected = (p: RoomPlayer, now: number) => new Date(p.last_seen)
 /** Reacciones a respuestas: claves guardadas en reactions.emoji (iguales a iOS). */
 export const REACTIONS = ['haha', 'fire', 'wow', 'clap', 'hmm', 'ouch'] as const;
 export const xpForNext = (level: number) => 250 * level;
+
+export interface AdminReport {
+	id: string; created_at: string; reason: string; details: string | null; status: 'open' | 'dismissed' | 'actioned';
+	resolution: string | null; room_id: string | null; room_code: string | null;
+	reporter: string; reporter_name: string | null;
+	reported: string; reported_name: string; reported_avatar: string; reported_banned_until: string | null;
+	reports_against: number; recent_messages: { body: string; at: string }[];
+}
+
+/** Idiomas de juego (profiles.language / rooms.language). */
+export const LANGUAGES: [string, string][] = [['es', 'Español'], ['en', 'English'], ['pt', 'Português']];
+export const languageName = (k?: string | null) => LANGUAGES.find(([key]) => key === (k ?? 'es'))?.[1] ?? 'Español';

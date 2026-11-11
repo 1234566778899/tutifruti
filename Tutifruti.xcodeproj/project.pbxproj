@@ -26,12 +26,14 @@
 		6BA90C89F9F3513E0BC9436E /* doubtful.wav in Resources */ = {isa = PBXBuildFile; fileRef = 3289007FBF88327B15AB0BAC /* doubtful.wav */; };
 		73C9863BC749997A8BB0EC34 /* AuthViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96B6686A238FCA63F2CCEB6D /* AuthViews.swift */; };
 		7AF563148BC4ADAB452009E5 /* SoundManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49EEB7C29EA00C822651A026 /* SoundManager.swift */; };
+		7CBDD88B7CF4E077A12484AC /* PushManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A5EB3598571E0C7543BC84 /* PushManager.swift */; };
 		7E3063629AAA1EF21F078B1C /* stop.wav in Resources */ = {isa = PBXBuildFile; fileRef = C2B69C8AA07D53FC1ED82524 /* stop.wav */; };
 		85DDD28B1AC3EB58A011A664 /* PublicRoomsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB6C1A3BEBC973DFA4444BF8 /* PublicRoomsView.swift */; };
 		89F3C01698A1619551AF54D9 /* join.wav in Resources */ = {isa = PBXBuildFile; fileRef = A0B510BE9635786016C4C7AB /* join.wav */; };
 		8B9C3734B39C5DFDD79A9D31 /* notify.wav in Resources */ = {isa = PBXBuildFile; fileRef = FA9C1F8C33901F6CC1CF7A34 /* notify.wav */; };
 		934786244C012DFABE59F4D5 /* coin.wav in Resources */ = {isa = PBXBuildFile; fileRef = 8EC4EA329438A1EC7AB11F9C /* coin.wav */; };
 		9B8210EA4B04381ED9603D4E /* levelup.wav in Resources */ = {isa = PBXBuildFile; fileRef = 3055325A69320EECAC2E0771 /* levelup.wav */; };
+		9C85D43AFDAB15C79E8C7114 /* ModelsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DBC1FA9ABDB2207D007B9F7 /* ModelsTests.swift */; };
 		9D5807E84F8672057F67C202 /* FriendsViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34850E49B0196C4CEDAD3E92 /* FriendsViews.swift */; };
 		9D58B4E371B87546A984931F /* TutifrutiApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEA54E3DB1C0E912C07612DA /* TutifrutiApp.swift */; };
 		A11BBDF98E90A450006472CF /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF1048AB5C706B26FCA9665C /* AppState.swift */; };
@@ -48,6 +50,16 @@
 		FC5AEBF79A8B4C445D01F8C0 /* HomeViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CEC09280FB353B5F1333EDE /* HomeViews.swift */; };
 		FD837D86E45FF838EFC2FC13 /* GameStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB1308F655CC4C4992FC9C75 /* GameStore.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		6A41144B97023019B73480EE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 92606241FE559E5E9DFAC96B /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7E0C8EE6EF223E69936F637F;
+			remoteInfo = Tutifruti;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		029A7A503879606AE57AE0A4 /* Fun.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fun.swift; sourceTree = "<group>"; };
@@ -66,6 +78,7 @@
 		4737638BF1252E0472C4E940 /* valid.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = valid.wav; sourceTree = "<group>"; };
 		47A4E8F0EBB2ED3F6D710770 /* go.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = go.wav; sourceTree = "<group>"; };
 		49EEB7C29EA00C822651A026 /* SoundManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundManager.swift; sourceTree = "<group>"; };
+		4C574859C71B9AA995A58B14 /* TutifrutiTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = TutifrutiTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4EFDFEA739285904CAB0B322 /* GameTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameTheme.swift; sourceTree = "<group>"; };
 		5AD86DC167FD96CCF192FAE9 /* Tutifruti.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Tutifruti.entitlements; sourceTree = "<group>"; };
 		5C0D6239A62821C126C4FA1E /* count.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = count.wav; sourceTree = "<group>"; };
@@ -76,6 +89,7 @@
 		8889B2443B76B0031172A5A0 /* RoundViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundViews.swift; sourceTree = "<group>"; };
 		8A17F9307971C0EAC4EDA005 /* API.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = API.swift; sourceTree = "<group>"; };
 		8AA112A703EF6298136F92B0 /* hurry.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = hurry.wav; sourceTree = "<group>"; };
+		8DBC1FA9ABDB2207D007B9F7 /* ModelsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelsTests.swift; sourceTree = "<group>"; };
 		8EC4EA329438A1EC7AB11F9C /* coin.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = coin.wav; sourceTree = "<group>"; };
 		96B6686A238FCA63F2CCEB6D /* AuthViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViews.swift; sourceTree = "<group>"; };
 		97486D3B9488B663BC8A1ED8 /* tick.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = tick.wav; sourceTree = "<group>"; };
@@ -85,6 +99,7 @@
 		AE91F65CF956536BA4C21532 /* RoomViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomViews.swift; sourceTree = "<group>"; };
 		B2A45F83104424A2AE19CF74 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C2B69C8AA07D53FC1ED82524 /* stop.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = stop.wav; sourceTree = "<group>"; };
+		C7A5EB3598571E0C7543BC84 /* PushManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushManager.swift; sourceTree = "<group>"; };
 		D4C0A43B5E7D168B89769EAA /* Supa.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Supa.swift; sourceTree = "<group>"; };
 		D73A5556E390C3A417811023 /* StoreViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreViews.swift; sourceTree = "<group>"; };
 		EEA54E3DB1C0E912C07612DA /* TutifrutiApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TutifrutiApp.swift; sourceTree = "<group>"; };
@@ -110,6 +125,7 @@
 			isa = PBXGroup;
 			children = (
 				EE252CB5E2CA7D9171802EA6 /* Tutifruti */,
+				E6F67D05E880BFC2B80DAB0E /* TutifrutiTests */,
 				8F81D3262D36DDD10C10211C /* Products */,
 			);
 			sourceTree = "<group>";
@@ -171,6 +187,7 @@
 				8A17F9307971C0EAC4EDA005 /* API.swift */,
 				FF1048AB5C706B26FCA9665C /* AppState.swift */,
 				FB1308F655CC4C4992FC9C75 /* GameStore.swift */,
+				C7A5EB3598571E0C7543BC84 /* PushManager.swift */,
 				49EEB7C29EA00C822651A026 /* SoundManager.swift */,
 			);
 			path = Services;
@@ -190,6 +207,7 @@
 			isa = PBXGroup;
 			children = (
 				5D36D140D076F03AC89E6CD4 /* Tutifruti.app */,
+				4C574859C71B9AA995A58B14 /* TutifrutiTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -267,6 +285,14 @@
 			path = Home;
 			sourceTree = "<group>";
 		};
+		E6F67D05E880BFC2B80DAB0E /* TutifrutiTests */ = {
+			isa = PBXGroup;
+			children = (
+				8DBC1FA9ABDB2207D007B9F7 /* ModelsTests.swift */,
+			);
+			path = TutifrutiTests;
+			sourceTree = "<group>";
+		};
 		EE252CB5E2CA7D9171802EA6 /* Tutifruti */ = {
 			isa = PBXGroup;
 			children = (
@@ -305,6 +331,24 @@
 			productReference = 5D36D140D076F03AC89E6CD4 /* Tutifruti.app */;
 			productType = "com.apple.product-type.application";
 		};
+		802EF856F0504FA5567C4DFB /* TutifrutiTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 32B435C24EEB37B4D0F30256 /* Build configuration list for PBXNativeTarget "TutifrutiTests" */;
+			buildPhases = (
+				E6FBEF2A94990A013F9892A9 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				5B9736254E8707E973664230 /* PBXTargetDependency */,
+			);
+			name = TutifrutiTests;
+			packageProductDependencies = (
+			);
+			productName = TutifrutiTests;
+			productReference = 4C574859C71B9AA995A58B14 /* TutifrutiTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -317,6 +361,9 @@
 					7E0C8EE6EF223E69936F637F = {
 						DevelopmentTeam = JZ9Z9GWH7P;
 						ProvisioningStyle = Automatic;
+					};
+					802EF856F0504FA5567C4DFB = {
+						DevelopmentTeam = JZ9Z9GWH7P;
 					};
 				};
 			};
@@ -338,6 +385,7 @@
 			projectRoot = "";
 			targets = (
 				7E0C8EE6EF223E69936F637F /* Tutifruti */,
+				802EF856F0504FA5567C4DFB /* TutifrutiTests */,
 			);
 		};
 /* End PBXProject section */
@@ -389,6 +437,7 @@
 				4DCA92B7AC4B98C46EF9F1BF /* Models.swift in Sources */,
 				178EC6F335D24F14A4D66C35 /* ProfileViews.swift in Sources */,
 				85DDD28B1AC3EB58A011A664 /* PublicRoomsView.swift in Sources */,
+				7CBDD88B7CF4E077A12484AC /* PushManager.swift in Sources */,
 				0F2BA1D32190AADAED2E26DC /* ResultsViews.swift in Sources */,
 				A8E65FEC59EA71F2CA273E35 /* RoomViews.swift in Sources */,
 				2EFCB7BA92222510FBE5695C /* RoundViews.swift in Sources */,
@@ -399,7 +448,23 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		E6FBEF2A94990A013F9892A9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9C85D43AFDAB15C79E8C7114 /* ModelsTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		5B9736254E8707E973664230 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7E0C8EE6EF223E69936F637F /* Tutifruti */;
+			targetProxy = 6A41144B97023019B73480EE /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		319F799C3488E2E796DD7071 /* Release */ = {
@@ -422,6 +487,25 @@
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		365C2ECAC50885A07C2AFDB5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEVELOPMENT_TEAM = JZ9Z9GWH7P;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.carlosordaz.tutifruti.tests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Tutifruti.app/Tutifruti";
 			};
 			name = Release;
 		};
@@ -544,6 +628,25 @@
 			};
 			name = Debug;
 		};
+		BDCB985CD9C6CFF60C3B7E58 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEVELOPMENT_TEAM = JZ9Z9GWH7P;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.carlosordaz.tutifruti.tests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Tutifruti.app/Tutifruti";
+			};
+			name = Debug;
+		};
 		FE19E0CC80C961B73D54F4EE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -570,6 +673,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		32B435C24EEB37B4D0F30256 /* Build configuration list for PBXNativeTarget "TutifrutiTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BDCB985CD9C6CFF60C3B7E58 /* Debug */,
+				365C2ECAC50885A07C2AFDB5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
 		7875A7D656D15980E24E0280 /* Build configuration list for PBXNativeTarget "Tutifruti" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

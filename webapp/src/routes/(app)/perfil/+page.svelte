@@ -1,13 +1,14 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { ChevronLeft, Pencil, Volume2, Vibrate, Bell, Mail, KeyRound, LogOut, Trash2, CloudUpload, BookOpen, Shield, FileText, Trophy, Lock, Check } from '@lucide/svelte';
+	import { ChevronLeft, Pencil, Volume2, Vibrate, Bell, Mail, KeyRound, LogOut, Trash2, CloudUpload, BookOpen, Shield, FileText, Trophy, Lock, Check, Globe, Palette, Gavel } from '@lucide/svelte';
 	import * as API from '#lib/api.ts';
 	import { app } from '#lib/app.svelte.ts';
 	import { friendlyError } from '#lib/errors.ts';
 	import { sfx, soundEnabled, setSoundEnabled, hapticsEnabled, setHapticsEnabled } from '#lib/sfx.ts';
 	import { FREE_AVATARS, AVATAR_NAMES } from '#lib/avatars.ts';
 	import { ACHIEVEMENT_ICONS, ACHIEVEMENT_COLORS } from '#lib/achievements.ts';
-	import { xpForNext, type Achievement, type HistoryRow, type UserAchievement } from '#lib/types.ts';
+	import { THEMES, themeUnlocked, usableTheme, type ThemeKey } from '#lib/themes.ts';
+	import { xpForNext, LANGUAGES, type Achievement, type HistoryRow, type UserAchievement } from '#lib/types.ts';
 	import Avatar from '#lib/components/Avatar.svelte';
 	import OutlinedTitle from '#lib/components/OutlinedTitle.svelte';
 	import CandyButton from '#lib/components/CandyButton.svelte';
@@ -26,12 +27,14 @@
 	let busy = $state(false), error = $state<string | null>(null), info = $state<string | null>(null);
 	let newName = $state(''), pass1 = $state(''), pass2 = $state(''), saveEmail = $state('');
 
-	const prefs = $derived({ invites: true, friend_requests: true, results: true, achievements: true, ...(p.notif_prefs ?? {}) });
+	const prefs = $derived({ invites: true, friend_requests: true, friends_online: true, results: true, achievements: true, ...(p.notif_prefs ?? {}) });
+	const theme = $derived(usableTheme(p));
+	const themeKeys = Object.keys(THEMES) as ThemeKey[];
 	const unlockedIds = $derived(new Set(unlocked.map((u) => u.achievement_id)));
 	const winRate = $derived(p.games_played ? Math.round((p.games_won / p.games_played) * 100) : 0);
 
 	$effect(() => {
-		API.achievements().then((a) => (achievements = a.filter((x) => !['polyglot', 'season_top100'].includes(x.id)))).catch(() => {});
+		API.achievements().then((a) => (achievements = a.filter((x) => x.id !== 'season_top100'))).catch(() => {});
 		API.userAchievements(p.id).then((u) => (unlocked = u)).catch(() => {});
 		void app.refreshProfile();
 	});
@@ -54,6 +57,15 @@
 		const next = { ...prefs, [key]: on };
 		app.profile = { ...p, notif_prefs: next };
 		try { await API.updateProfile({ notif_prefs: next }); } catch (e) { app.showToast(friendlyError(e)); }
+	}
+	async function setTheme(key: ThemeKey) {
+		if (!themeUnlocked(key, p) || key === theme) return;
+		app.profile = { ...p, theme: key }; sfx('tap', .5);
+		try { await API.updateProfile({ theme: key }); } catch (e) { app.showToast(friendlyError(e)); }
+	}
+	async function setLanguage(language: string) {
+		app.profile = { ...p, language };
+		try { await API.updateProfile({ language }); app.showToast('Idioma de juego guardado', false); } catch (e) { app.showToast(friendlyError(e)); }
 	}
 	function date(iso: string | null) { return iso ? new Date(iso).toLocaleDateString('es', { day: 'numeric', month: 'short' }) : ''; }
 </script>
@@ -133,15 +145,39 @@
 			<section class="panel">
 				<span class="tiny muted">Avisos dentro del juego</span>
 				<Switch checked={prefs.invites} onchange={(v) => setPref('invites', v)}><Bell size={18} color="var(--lemon)" /> Invitaciones a salas</Switch>
-				{#if !app.isGuest}<Switch checked={prefs.friend_requests} onchange={(v) => setPref('friend_requests', v)}><Bell size={18} color="var(--lemon)" /> Solicitudes de amistad</Switch>{/if}
+				{#if !app.isGuest}<Switch checked={prefs.friend_requests} onchange={(v) => setPref('friend_requests', v)}><Bell size={18} color="var(--lemon)" /> Solicitudes de amistad</Switch>
+				<Switch checked={prefs.friends_online} onchange={(v) => setPref('friends_online', v)}><Bell size={18} color="var(--lemon)" /> Amigos que se conectan</Switch>{/if}
 				<Switch checked={prefs.results} onchange={(v) => setPref('results', v)}><Bell size={18} color="var(--lemon)" /> Resultados de partidas</Switch>
 				<Switch checked={prefs.achievements} onchange={(v) => setPref('achievements', v)}><Bell size={18} color="var(--lemon)" /> Logros</Switch>
 			</section>
+
+			{#if !app.isGuest}
+				<section class="panel stack prefs">
+					<label class="langrow"><Globe size={18} color="var(--lemon)" /><span class="grow">Idioma de juego</span>
+						<select value={p.language ?? 'es'} onchange={(e) => setLanguage(e.currentTarget.value)}>
+							{#each LANGUAGES as [k, name]}<option value={k}>{name}</option>{/each}
+						</select>
+					</label>
+					<p class="tiny muted">Las salas que crees se juegan en este idioma: la IA valida las respuestas en él.</p>
+					<span class="langrow"><Palette size={18} color="var(--lemon)" /><span class="grow">Tema</span></span>
+					<div class="themes">
+						{#each themeKeys as k}
+							{@const ok = themeUnlocked(k, p)}
+							<button class="theme" class:on={k === theme} disabled={!ok} onclick={() => setTheme(k)}
+								style:--a={THEMES[k].header} style:--b={THEMES[k].night} style:--g="rgb({THEMES[k].glow})">
+								<span class="sw"></span><b>{THEMES[k].name}</b>
+								<small>{k === theme ? 'En uso' : ok ? 'Usar' : k === 'pizarra' ? 'Nivel 5' : 'Plus'}</small>
+							</button>
+						{/each}
+					</div>
+				</section>
+			{/if}
 
 			<h3 class="section-title">Cuenta</h3>
 			<section class="panel menu">
 				{#if app.email}<div class="item static"><Mail size={18} /><span class="grow">{app.email}</span></div>{/if}
 				{#if app.email && !app.needsPassword}<button class="item" onclick={() => open('password')}><KeyRound size={18} /><span class="grow">Cambiar contraseña</span></button>{/if}
+				{#if p.is_admin}<a class="item" href="/moderacion"><Gavel size={18} /><span class="grow">Moderación</span></a>{/if}
 				<a class="item" href="/como-jugar"><BookOpen size={18} /><span class="grow">Reglas del juego</span></a>
 				<a class="item" href="/terminos"><FileText size={18} /><span class="grow">Términos de uso</span></a>
 				<a class="item" href="/privacidad"><Shield size={18} /><span class="grow">Privacidad</span></a>
@@ -214,6 +250,18 @@
 
 <style>
 	.wide-ish { max-width: 980px; }
+	.prefs { gap: 10px; }
+	.langrow { display: flex; align-items: center; gap: 10px; font-weight: 800; }
+	.langrow select { background: var(--panel); color: #fff; border: 1.5px solid var(--panel-stroke); border-radius: 12px; padding: 8px 10px; font: inherit; font-weight: 800; }
+	.langrow select option { color: #000; }
+	.themes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+	.theme { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 6px; border-radius: 16px; cursor: pointer;
+		background: var(--panel); border: 2px solid var(--panel-stroke); color: #fff; font: inherit; }
+	.theme.on { border-color: var(--lemon); }
+	.theme:disabled { opacity: .5; cursor: not-allowed; }
+	.theme .sw { width: 44px; height: 44px; border-radius: 50%; border: 2px solid rgba(255,255,255,.3);
+		background: radial-gradient(circle at 50% 15%, var(--g) 0 12%, transparent 45%), linear-gradient(180deg, var(--a), var(--b)); }
+	.theme small { font-size: 11px; font-weight: 800; opacity: .75; }
 	.bar { display: grid; grid-template-columns: 44px 1fr 44px; align-items: center; }
 	.iconbtn { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: var(--panel); color: var(--lemon); border: 1.5px solid var(--panel-stroke); }
 	.hero { display: flex; align-items: center; gap: 16px; }

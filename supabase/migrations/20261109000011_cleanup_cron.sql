@@ -1,6 +1,6 @@
 -- Tareas programadas (pg_cron):
 --  * cleanup_rooms(): cancela salas abandonadas ('waiting' o 'playing' sin nadie conectado hace > 30 min).
---  * cleanup_guests(): borra invitados sin actividad hace > 7 días (definida en 008_guests.sql).
+--  * cleanup_guests(): borra invitados sin actividad hace > 7 días (definida en 20261109000008_guests.sql).
 
 create extension if not exists pg_cron;
 

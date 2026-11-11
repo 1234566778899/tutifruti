@@ -161,12 +161,14 @@ struct EditProfileView: View {
                     .textInputAutocapitalization(.never).autocorrectionDisabled()
                 LabeledContent("Correo electrónico", value: supabase.auth.currentUser?.email ?? "—")
                 Picker("Idioma de juego", selection: $language) {
-                    Text("Español").tag("es")
-                    Text("English").tag("en")
-                    Text("Português").tag("pt")
+                    ForEach(GameLanguage.all, id: \.key) { Text($0.name).tag($0.key) }
                 }
             } footer: {
-                Label("Puedes cambiar tu nombre de usuario una vez cada 30 días.", systemImage: "info.circle")
+                VStack(alignment: .leading, spacing: 6) {
+                    Label("Puedes cambiar tu nombre de usuario una vez cada 30 días.", systemImage: "info.circle")
+                    Label("Las salas que crees se juegan en tu idioma de juego: la IA valida las respuestas en ese idioma.",
+                          systemImage: "globe")
+                }
             }
         }
         .gameTitle("Editar perfil")

@@ -50,6 +50,8 @@ struct Room: Codable, Identifiable, Hashable {
     var levelMax: Int
     var createdAt: Date
     var finishedAt: Date?
+    /// Idioma de juego (el del anfitrión): es | en | pt. Opcional para tolerar filas antiguas.
+    var language: String?
 
     var summary: String {
         "\(roundsTotal) rondas · \(roundSeconds) s por ronda · STOP \(stopSeconds) s · \(categories.count) categorías"
@@ -175,6 +177,7 @@ struct PublicRoom: Codable, Identifiable, Hashable {
     var excludeHard: Bool
     var createdAt: Date
     var isMember: Bool
+    var language: String?
 
     var id: UUID { roomId }
     var isFull: Bool { players >= maxPlayers }
@@ -364,4 +367,10 @@ enum Reactions {
                                         "\u{1F44F}": "clap", "\u{1F914}": "hmm", "\u{1F480}": "ouch"]
         return legacy[stored] ?? "wow"
     }
+}
+
+/// Idiomas de juego (`profiles.language`, `rooms.language`).
+enum GameLanguage {
+    static let all: [(key: String, name: String)] = [("es", "Español"), ("en", "English"), ("pt", "Português")]
+    static func name(_ key: String?) -> String { all.first { $0.key == (key ?? "es") }?.name ?? "Español" }
 }

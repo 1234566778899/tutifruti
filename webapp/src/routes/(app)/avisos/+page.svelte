@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { ChevronLeft, CheckCheck, Trash2, DoorOpen, UserPlus, Trophy, Award, ChartBar, Bell } from '@lucide/svelte';
+	import { ChevronLeft, CheckCheck, Trash2, DoorOpen, UserPlus, Trophy, Award, ChartBar, Bell, Wifi } from '@lucide/svelte';
 	import * as API from '#lib/api.ts';
 	import { app } from '#lib/app.svelte.ts';
 	import { friendlyError } from '#lib/errors.ts';
@@ -13,7 +13,7 @@
 	let joining = $state<number | null>(null);
 	const ICONS: Record<string, [any, string]> = {
 		room_invite: [DoorOpen, 'var(--sky)'], friend_request: [UserPlus, 'var(--lime)'], achievement: [Award, 'var(--lemon)'],
-		level_up: [Trophy, 'var(--tangerine)'], results: [ChartBar, 'var(--grape)']
+		level_up: [Trophy, 'var(--tangerine)'], results: [ChartBar, 'var(--grape)'], friend_online: [Wifi, 'var(--lime)']
 	};
 	$effect(() => {
 		void app.refreshNotifications();
@@ -32,7 +32,7 @@
 			joining = n.id;
 			try { const id = await API.joinByCode(n.payload.code); sfx('join'); goto(`/sala/${id}`); }
 			catch (e) { app.showToast(friendlyError(e)); } finally { joining = null; }
-		} else if (n.kind === 'friend_request') goto('/amigos');
+		} else if (n.kind === 'friend_request' || n.kind === 'friend_online') goto('/amigos');
 		else if (n.kind === 'achievement' || n.kind === 'level_up') goto('/perfil');
 	}
 </script>

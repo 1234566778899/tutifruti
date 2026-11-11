@@ -340,7 +340,7 @@ struct NotificationPrefsView: View {
 
     private let items: [(String, String)] = [
         ("invites", "Invitaciones a partidas"), ("friend_requests", "Solicitudes de amistad"),
-        ("friends_online", "Amigos conectados que te invitan"), ("results", "Resultados de partidas"),
+        ("friends_online", "Amigos que se conectan"), ("results", "Resultados de partidas"),
         ("achievements", "Logros desbloqueados"),
     ]
 
@@ -351,7 +351,7 @@ struct NotificationPrefsView: View {
                     Toggle(label, isOn: Binding(get: { prefs[key] ?? true }, set: { prefs[key] = $0; save() }))
                 }
             } header: { SectionTitle(text: "Notificaciones").listRowInsets(EdgeInsets(top: 0, leading: 4, bottom: 6, trailing: 4)) } footer: {
-                Text("Si desactivas las notificaciones en Ajustes de iOS, estas preferencias no tendrán efecto.")
+                Text("Llegan dentro de la app y como notificación push. Si las desactivas en Ajustes de iOS, solo verás los avisos dentro de la app.")
             }
         }
         .gameTitle("Notificaciones")

@@ -1,5 +1,6 @@
 // Árbitro IA: valida todas las respuestas de una ronda y calcula los puntos.
 import { askJSON, cors, json, serviceClient, userClient } from "../_shared/ai.ts";
+import { firstLetter } from "../_shared/letters.ts";
 
 type Verdict = {
   id: number;
@@ -8,11 +9,16 @@ type Verdict = {
   checks: { letter: boolean; category: boolean; real_word: boolean; spelling: boolean };
 };
 
-const SYSTEM = `Eres el árbitro del juego Stop / Basta / Tutifruti en español.
+const LANGS: Record<string, string> = { es: "español", en: "inglés", pt: "portugués" };
+
+const system = (lang: string) => `Eres el árbitro del juego Stop / Basta / Tutifruti. La partida se juega en ${LANGS[lang] ?? "español"}.
+Las categorías pueden estar escritas en español aunque la partida sea en otro idioma.
 Para cada respuesta decides si es válida para su categoría y la letra de la ronda.
 Criterios:
-- Debe empezar con la letra indicada (ignora mayúsculas y acentos; la Ñ es distinta de la N).
-- Debe pertenecer claramente a la categoría. Acepta nombres en otros idiomas si son de uso común en español.
+- Debe empezar con la letra indicada (ignora mayúsculas y acentos; la Ñ es distinta de la N). Fíjate en la PRIMERA letra
+  de la respuesta tal como está escrita: "Mesa" empieza con M, no con D.
+- Debe pertenecer claramente a la categoría. Acepta respuestas en ${LANGS[lang] ?? "español"} y nombres de otros idiomas
+  si son de uso común.
 - Debe ser una palabra o nombre real. Acepta errores ortográficos menores (una letra, acentos faltantes) pero márcalos en "spelling": false.
 - Marca "doubtful" solo si es genuinamente ambigua (puede o no pertenecer a la categoría).
 - "invalid" si no empieza con la letra, no existe, no pertenece a la categoría o es un intento de trampa.
@@ -62,6 +68,8 @@ Deno.serve(async (req) => {
     const db = serviceClient();
     const { data: round } = await db.from("rounds").select("id, letter, status, room_id").eq("id", round_id).single();
     if (!round || round.status !== "validating") return json({ status: "skipped" });
+    const { data: room } = await db.from("rooms").select("language").eq("id", round.room_id).single();
+    const lang = (room?.language as string | undefined) ?? "es";
 
     const { data: answers } = await db.from("answers").select("user_id, category, value")
       .eq("round_id", round_id).eq("status", "pending");
@@ -78,13 +86,22 @@ Deno.serve(async (req) => {
     if (unique.length > 0) {
       const list = unique.map((a, i) => `${i + 1}. [${a.category}] ${a.value.trim()}`).join("\n");
       const res = await askJSON<{ verdicts: Verdict[] }>(
-        SYSTEM,
+        system(lang),
         `Letra de la ronda: ${round.letter}\nRespuestas (id. [categoría] respuesta):\n${list}\n\nDevuelve un veredicto por cada id.`,
         SCHEMA,
       );
       for (const v of res.verdicts) {
         const a = unique[v.id - 1];
-        if (a) verdicts.set(key(a), v);
+        if (!a) continue;
+        // La IA a veces se equivoca con la letra: se comprueba aquí de forma determinista.
+        if (firstLetter(a.value) !== round.letter) {
+          v.status = "invalid";
+          v.checks = { ...v.checks, letter: false };
+          v.reason = `No empieza con la letra ${round.letter}.`;
+        } else {
+          v.checks = { ...v.checks, letter: true };
+        }
+        verdicts.set(key(a), v);
       }
     }
 

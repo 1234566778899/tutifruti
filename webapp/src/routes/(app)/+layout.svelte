@@ -7,6 +7,7 @@
 	import * as API from '#lib/api.ts';
 	import { friendlyError } from '#lib/errors.ts';
 	import { sfx } from '#lib/sfx.ts';
+	import { applyTheme, usableTheme } from '#lib/themes.ts';
 	import Mascot from '#lib/components/Mascot.svelte';
 	import Logo from '#lib/components/Logo.svelte';
 	import Welcome from '#lib/screens/Welcome.svelte';
@@ -15,6 +16,9 @@
 	let { children } = $props();
 
 	onMount(() => app.start());
+
+	// Tema visual equipado (Pizarra / Neón) en todas las pantallas del juego.
+	$effect(() => applyTheme(usableTheme(app.profile)));
 
 	// Enlaces /j/CODIGO (sala) y /a/TOKEN (amistad): se guardan hasta tener sesión.
 	$effect(() => {

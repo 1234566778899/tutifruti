@@ -2,6 +2,7 @@ import SwiftUI
 
 @main
 struct TutifrutiApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) private var delegate
     @State private var app = AppState()
     @State private var store = StoreManager()
 
@@ -69,6 +70,7 @@ struct RootView: View {
             if phase == .active { Task { await app.sceneBecameActive() } }
         }
         .overlay(alignment: .top) { ToastView(text: $app.toast) }
+        .sheet(isPresented: $app.needsNewPassword) { NewPasswordView().gameScreen() }
     }
 }
 

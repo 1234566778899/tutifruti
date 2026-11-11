@@ -31,6 +31,7 @@ Deno.serve(async (req) => {
     const { data: round } = await db.from("rounds").select("letter").eq("id", d.round_id).single();
     const { data: a } = await db.from("answers").select("value, status, reason")
       .match({ round_id: d.round_id, user_id: d.target_user, category: d.category }).single();
+    if (!round || !a) return json({ error: "Respuesta no encontrada" }, 404);
 
     const res = await askJSON<{ accept: boolean; resolution: string }>(
       SYSTEM,

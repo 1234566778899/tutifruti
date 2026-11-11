@@ -24,6 +24,8 @@ targets:
         CFBundleDisplayName: Tutifruti AI
         UILaunchScreen:
           UIColorName: LaunchBackground
+          UIImageName: logo_badge
+          UIImageRespectsSafeAreaInsets: true
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
         NSPhotoLibraryUsageDescription: Para elegir tu foto de perfil.
     entitlements:
@@ -31,6 +33,7 @@ targets:
       properties:
         com.apple.developer.applesignin: [Default]
         com.apple.developer.associated-domains: ["applinks:tutifruti-ai.vercel.app"]
+        aps-environment: development
     dependencies:
       - package: Supabase
         product: Supabase
@@ -47,3 +50,16 @@ targets:
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
     scheme:
       storeKitConfiguration: Tutifruti/Products.storekit
+      testTargets: [TutifrutiTests]
+  TutifrutiTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources: [TutifrutiTests]
+    dependencies:
+      - target: Tutifruti
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: com.carlosordaz.tutifruti.tests
+        DEVELOPMENT_TEAM: JZ9Z9GWH7P
+        SWIFT_VERSION: "5.0"

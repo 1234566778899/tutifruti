@@ -9,6 +9,9 @@ enum Config {
     /// Dominio de la página de invitaciones (Vercel, carpeta web/). Debe coincidir con applinks en el entitlement.
     static let inviteHost = "tutifruti-ai.vercel.app"
 
+    /// A dónde vuelven los enlaces de correo (debe estar en Auth → URL Configuration → Redirect URLs).
+    static let authCallbackURL = URL(string: "tutifruti://auth/callback")!
+
     /// Enlace https para compartir (WhatsApp lo hace clicable; abre la app por Universal Link o la página de respaldo).
     static func inviteURL(code: String) -> URL {
         URL(string: "https://\(inviteHost)/j/\(code)")!

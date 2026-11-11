@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { ChevronLeft, Plus, Users, RotateCw, Timer, LayoutGrid } from '@lucide/svelte';
+	import { ChevronLeft, Plus, Users, RotateCw, Timer, LayoutGrid, Globe } from '@lucide/svelte';
 	import * as API from '#lib/api.ts';
 	import { friendlyError } from '#lib/errors.ts';
 	import { app } from '#lib/app.svelte.ts';
@@ -53,6 +53,7 @@
 							<span style:color={full ? 'var(--cherry)' : 'var(--lime)'}><Users size={12} /> {r.players}/{r.max_players}</span>
 							<span><RotateCw size={12} /> {r.rounds_total}</span><span><Timer size={12} /> {r.round_seconds}s</span>
 							<span><LayoutGrid size={12} /> {r.categories.length}</span>
+							{#if r.language && r.language !== 'es'}<span><Globe size={12} /> {r.language.toUpperCase()}</span>{/if}
 						</div>
 					</div>
 					<button class="join" disabled={!!joining || (full && !r.is_member)} onclick={() => join(r)}>

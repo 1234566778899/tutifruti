@@ -12,6 +12,7 @@ final class StoreManager {
         .init(id: "level.owl", name: "Búho sabio", art: "wise_owl", kind: .avatar, requirement: .level(20)),
         .init(id: "com.carlosordaz.tutifruti.avatar.cat", name: "Gato STOP", art: "stop_cat", kind: .avatar, requirement: .purchase),
         .init(id: "level.dragon", name: "Dragón", art: "dragon", kind: .avatar, requirement: .level(30)),
+        .init(id: "theme.clasico", name: "Clásico", art: "leaf.fill", kind: .theme, requirement: .level(1)),
         .init(id: "theme.pizarra", name: "Pizarra", art: "rectangle.inset.filled", kind: .theme, requirement: .level(5)),
         .init(id: "theme.neon", name: "Neón", art: "sparkles", kind: .theme, requirement: .plus),
         .init(id: "cats.tecnologia", name: "Tecnología", art: "desktopcomputer", kind: .category, requirement: .plus),
@@ -46,16 +47,26 @@ final class StoreManager {
             if case .verified(let t) = result {
                 set.insert(t.productID)
                 if Self.plusIDs.contains(t.productID) { plus = true }
+                try? await sync(t, jws: result.jwsRepresentation)
             }
         }
         owned = set
         hasPlus = plus
-        if plus { try? await API.grantItem("plus") }
+    }
+
+    /// El servidor verifica la firma de Apple y otorga el artículo (Plus o compra). Las transacciones ya vistas
+    /// en esta instalación no se reenvían.
+    private func sync(_ t: StoreKit.Transaction, jws: String) async throws {
+        let key = "verified.\(t.id)"
+        if UserDefaults.standard.bool(forKey: key) { return }
+        try await API.verifyPurchase(jws: jws)
+        UserDefaults.standard.set(true, forKey: key)
     }
 
     private func listen() async {
         for await result in Transaction.updates {
             if case .verified(let t) = result {
+                try? await sync(t, jws: result.jwsRepresentation)
                 await t.finish()
                 await refreshEntitlements()
             }
@@ -66,9 +77,12 @@ final class StoreManager {
         guard let product = products[id] else { throw APIError.message("Producto no disponible todavía en App Store Connect.") }
         purchasing = id
         defer { purchasing = nil }
-        let result = try await product.purchase()
+        // appAccountToken = id del jugador: el servidor comprueba que la compra sea de esta cuenta.
+        var options: Set<Product.PurchaseOption> = []
+        if let me = API.myId { options.insert(.appAccountToken(me)) }
+        let result = try await product.purchase(options: options)
         guard case .success(let verification) = result, case .verified(let t) = verification else { return false }
-        try await API.grantItem(Self.plusIDs.contains(id) ? "plus" : id)
+        try await sync(t, jws: verification.jwsRepresentation)
         await t.finish()
         await refreshEntitlements()
         return true
@@ -89,6 +103,9 @@ struct StoreItem: Identifiable, Hashable {
     var art: String
     var kind: Kind
     var requirement: Requirement
+
+    /// Clave en `profiles.theme` para los temas ("theme.neon" → "neon").
+    var themeKey: String? { kind == .theme ? String(id.dropFirst("theme.".count)) : nil }
 }
 
 struct StoreView: View {
@@ -147,6 +164,10 @@ struct StoreView: View {
     }
 
     private func label(_ item: StoreItem) -> String {
+        if item.kind == .theme, let key = item.themeKey {
+            if AppState.usableTheme(app.profile) == key { return "En uso" }
+            if unlocked(item) { return "Equipar" }
+        }
         if store.owned.contains(item.id) { return "Tuyo" }
         switch item.requirement {
         case .purchase: return store.products[item.id]?.displayPrice ?? "—"
@@ -155,7 +176,21 @@ struct StoreView: View {
         }
     }
 
+    private func unlocked(_ item: StoreItem) -> Bool {
+        switch item.requirement {
+        case .purchase: store.owned.contains(item.id)
+        case .plus: store.hasPlus || app.profile?.isPlus == true
+        case .level(let l): (app.profile?.level ?? 0) >= l
+        }
+    }
+
     private func tap(_ item: StoreItem) async {
+        if item.kind == .theme, let key = item.themeKey {
+            guard unlocked(item) else { return }
+            Sfx.play(.tap)
+            do { try await API.updateProfile(theme: key); await app.refreshProfile() } catch { self.error = friendlyError(error) }
+            return
+        }
         guard item.requirement == .purchase, !store.owned.contains(item.id) else { return }
         do { _ = try await store.buy(item.id) } catch { self.error = friendlyError(error) }
     }

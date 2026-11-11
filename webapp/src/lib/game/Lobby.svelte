@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { languageName } from '#lib/types.ts';
 	import { Copy, Check, Share2, Globe, Lock, Crown, UserPlus, Play, Hand, RotateCw, Timer, Users } from '@lucide/svelte';
 	import { app } from '#lib/app.svelte.ts';
 	import InviteFriends from './InviteFriends.svelte';
@@ -63,6 +64,7 @@
 		<div><Timer size={18} color="var(--lemon)" /><b>{room.round_seconds}s</b><small>por ronda</small></div>
 		<div><Hand size={18} color="var(--lemon)" /><b>{room.stop_seconds}s</b><small>tras STOP</small></div>
 		<div class="catlist">{#each room.categories as c}<span>{c}</span>{/each}</div>
+		{#if room.language && room.language !== 'es'}<p class="lang">Se juega en {languageName(room.language)}: la IA valida las respuestas en ese idioma.</p>{/if}
 	</section>
 
 	<div class="bottom">
@@ -106,4 +108,5 @@
 	.bottom { position: sticky; bottom: 0; padding: 18px 0 calc(8px + env(safe-area-inset-bottom)); background: linear-gradient(transparent, var(--night) 30%);
 		display: flex; flex-direction: column; align-items: center; gap: 6px; }
 	.bottom p { margin: 0; }
+	.lang { grid-column: 1 / -1; margin: 4px 0 0; color: var(--lemon); font-size: 13px; font-weight: 700; }
 </style>

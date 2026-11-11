@@ -1,5 +1,5 @@
 import { supabase } from './supabase';
-import type { Achievement, Answer, AppNotification, Category, ChatMessage, Dispute, FriendLinkResult, FriendRow, HistoryRow, Profile, PublicRoom, Reaction, Room, RoomPlayer, Round, SearchUser, UserAchievement } from './types';
+import type { AdminReport, Achievement, Answer, AppNotification, Category, ChatMessage, Dispute, FriendLinkResult, FriendRow, HistoryRow, Profile, PublicRoom, Reaction, Room, RoomPlayer, Round, SearchUser, UserAchievement } from './types';
 
 /** Mismas RPC y tablas que la app iOS (Services/API.swift): ambas versiones juegan en las mismas salas. */
 
@@ -21,7 +21,7 @@ export async function myProfile(): Promise<Profile | null> {
 }
 export const usernameAvailable = (name: string) => rpc<boolean>('username_available', { p_username: name }).catch(() => false);
 export const createProfile = (username: string, avatar: string) => rpc<Profile>('create_profile', { p_username: username, p_avatar: avatar });
-export async function updateProfile(patch: { avatar?: string; notif_prefs?: Record<string, boolean> }) {
+export async function updateProfile(patch: { avatar?: string; notif_prefs?: Record<string, boolean>; theme?: string; language?: string }) {
 	const id = await myId();
 	const { error } = await supabase.from('profiles').update(patch).eq('id', id!);
 	if (error) throw error;
@@ -197,3 +197,9 @@ export async function userAchievements(user: string): Promise<UserAchievement[]>
 	return data as UserAchievement[];
 }
 export const history = (filter: 'all' | 'public' | 'private' = 'all') => rpc<HistoryRow[]>('my_history', { p_filter: filter });
+
+// Moderación (solo administradores: profiles.is_admin)
+export const adminReports = (status: 'open' | 'all' = 'open') => rpc<AdminReport[]>('admin_reports', { p_status: status });
+export const adminResolveReport = (id: string, action: 'dismiss' | 'ban', days: number | null = 7) =>
+	rpc<void>('admin_resolve_report', { p_report: id, p_action: action, p_days: days });
+export const adminUnban = (user: string) => rpc<void>('admin_unban', { p_user: user });

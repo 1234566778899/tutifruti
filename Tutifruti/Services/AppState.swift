@@ -11,7 +11,18 @@ final class AppState {
     enum Tab: Hashable { case home, friends, profile }
 
     var phase: Phase = .loading
-    var profile: Profile?
+    var profile: Profile? {
+        didSet { ThemeStore.shared.key = Self.usableTheme(profile) }
+    }
+
+    /// Tema equipado si el jugador lo tiene desbloqueado (Pizarra: nivel 5; Neón: Plus); si no, el clásico.
+    static func usableTheme(_ p: Profile?) -> String {
+        switch p?.theme {
+        case "pizarra" where (p?.level ?? 0) >= 5: "pizarra"
+        case "neon" where p?.isPlus == true: "neon"
+        default: "clasico"
+        }
+    }
     /// Sesión de invitado (usuario anónimo): solo juega; sin amigos ni perfil persistente.
     var isGuest = false
     /// Solo en DEBUG: `-forceMember YES` muestra la interfaz de cuenta normal (para revisar pantallas en el simulador).
@@ -34,6 +45,8 @@ final class AppState {
     var friendsVersion = 0
     var unreadNotifications = 0
     var toast: String?
+    /// Se abrió un enlace de "restablecer contraseña": se pide la nueva.
+    var needsNewPassword = false
     /// Nivel al entrar a una partida, para detectar "¡Subiste de nivel!".
     var levelAtGameStart: Int?
 
@@ -54,6 +67,9 @@ final class AppState {
                 if session == nil { phase = .signedOut } else { await loadProfile() }
             case .signedIn, .userUpdated, .tokenRefreshed:
                 if phase != .ready { await loadProfile() }
+            case .passwordRecovery:
+                needsNewPassword = true
+                if phase != .ready { await loadProfile() }
             case .signedOut, .userDeleted:
                 stopRealtime()
                 profile = nil
@@ -71,6 +87,8 @@ final class AppState {
                 if phase != .ready {
                     phase = .ready
                     startRealtime()
+                    PushManager.shared.app = self
+                    if !isGuest { Task { await PushManager.shared.enable() } }
                     await ClockSync.shared.sync()
                     // Si había una partida en curso, volvemos a ella.
                     if let room = p.currentRoom, let r = try? await API.room(room), r.status == "playing" || r.status == "waiting" {
@@ -90,6 +108,7 @@ final class AppState {
     }
 
     func signOut() async {
+        await PushManager.shared.disable()
         try? await supabase.auth.signOut()
     }
 
@@ -124,6 +143,7 @@ final class AppState {
             isGuest = supabase.auth.currentUser?.isAnonymous ?? false
             await refreshProfile()
             toast = "¡Listo! Tu progreso quedó guardado."
+            Task { await PushManager.shared.enable() }
         }
     }
 
@@ -216,6 +236,7 @@ final class AppState {
     func refreshUnread() async {
         let list = (try? await API.notifications()) ?? []
         unreadNotifications = list.filter { !$0.read }.count
+        PushManager.shared.setBadge(unreadNotifications)
     }
 
     // MARK: Navegación a partidas
@@ -281,6 +302,14 @@ final class AppState {
         let isScheme = url.scheme == Config.deepLinkScheme
         let isWeb = (url.scheme == "https" || url.scheme == "http") && url.host == Config.inviteHost
         guard isScheme || isWeb else { return }
+        // Enlaces de correo (confirmar cuenta, restablecer contraseña): tutifruti://auth/callback?code=…
+        if isScheme, url.host == "auth" {
+            Task {
+                do { _ = try await supabase.auth.session(from: url) }
+                catch { toast = "El enlace venció o ya se usó. Pide uno nuevo." }
+            }
+            return
+        }
         let parts = url.pathComponents.filter { $0 != "/" }
         let kind = isScheme ? (url.host ?? "") : (parts.first ?? "")
         if kind == "friend" || kind == "a" {

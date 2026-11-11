@@ -31,7 +31,7 @@ https://www.figma.com/design/P8AAzV4oac2pY8r4GKSKiQ/tutifruti?node-id=3260-2
   `tools/crop_sheet.py <hoja> <cols> <filas> <nombres> <salida> --key FF00FF`.
 - **Sin emojis** en la app ni en la base: avatares = claves (`fox`, `owl`, … `dragon`) → imagen `avatar_<clave>`
   (`Avatars` en `Models.swift`, mapea emojis antiguos). Reacciones = claves (`haha`, `fire`, …) → símbolos SF (`Reactions`).
-  Migración `005_no_emoji.sql` (aplicada).
+  Migración `20261109000005_no_emoji.sql` (aplicada).
 - Arte generado con ChatGPT (hojas en `art/source/`): 18 avatares, mascota **Tuti** (naranja) en 6 poses
   (`tuti_hello/judge/party/sad/stop/sleep`, `MascotView`), ícono de la app (`art/icon.png`).
   `tools/crop_sheet.py` recorta hojas → `art/avatars`, `art/mascot`; `tools/build_assets.py` las pasa a `Assets.xcassets`.
@@ -45,7 +45,7 @@ https://www.figma.com/design/P8AAzV4oac2pY8r4GKSKiQ/tutifruti?node-id=3260-2
 ## Invitaciones y reconexión
 - **Enlace de amistad**: `https://tutifruti-ai.vercel.app/a/<token>` (o `tutifruti://friend/<token>`). Quien lo abre queda
   como amigo al instante (`accept_friend_invite`) y ve `FriendAddedSheet`. Tokens en `friend_invites` (30 días, 200 usos,
-  revocables con "Generar un enlace nuevo"); validaciones en `010_friend_links.sql` (invitados, propio enlace, vencido,
+  revocables con "Generar un enlace nuevo"); validaciones en `20261109000010_friend_links.sql` (invitados, propio enlace, vencido,
   revocado, ya amigos, solicitud pendiente, límite 20/hora y 500 amigos). Se comparte desde `FriendLinkCard` (Amigos).
 - Enlace para compartir: `https://tutifruti-ai.vercel.app/j/TUTI-XXXX` (`Config.inviteURL`). Universal Link
   (`applinks:tutifruti-ai.vercel.app`, AASA en `web/.well-known/`) abre la app y se une sola; si no, la página `web/join.html`
@@ -81,22 +81,24 @@ https://www.figma.com/design/P8AAzV4oac2pY8r4GKSKiQ/tutifruti?node-id=3260-2
 
 ## Estructura
 - `Tutifruti/` — código de la app (App, Models, Services, Views/<módulo>).
-- `supabase/migrations/` — `001_schema.sql` (tablas + RLS + realtime), `002_game_logic.sql` (RPCs), `003_seed.sql`.
-- `supabase/functions/` — `validate-round`, `resolve-dispute`, `categories-ai` (+ `_shared/ai.ts`).
+- `supabase/migrations/` — `20261109000001_schema.sql` (tablas + RLS + realtime), `20261109000002_game_logic.sql` (RPCs), `20261109000003_seed.sql`.
+- `supabase/functions/` — `validate-round`, `resolve-dispute`, `categories-ai`, `send-push`, `app-store`
+  (+ `_shared/ai.ts`, `_shared/letters.ts`).
+- `supabase/scripts/` — SQL de mantenimiento que no es migración (p. ej. borrar datos de prueba).
 - `supabase/tests/smoke.sql` — prueba de humo del flujo completo (corre en transacción y hace ROLLBACK).
 
 ## Lógica del juego (en Postgres, RPCs SECURITY DEFINER)
 - Toda la autoridad está en el servidor; los tiempos usan `now()` del servidor (la app sincroniza con `server_now()`).
 - Salas: **privadas** (solo código/invitación) y **públicas** (`create_room(..., p_is_public)`; listadas por
   `list_public_rooms`, se entra con `join_public_room` mientras están en espera; cuentan para rankings). Ya no hay
-  partida rápida/matchmaking (`find_public_match` queda sin uso). Migración `007_public_rooms.sql`.
+  partida rápida/matchmaking (`find_public_match` queda sin uso). Migración `20261109000007_public_rooms.sql`.
 - Flujo: `create_room` / `join_room_by_code` / `join_public_room` → el anfitrión hace `start_game` → por ronda:
   `save_answer` (autoguardado) → `call_stop` → `close_round` → Edge Function `validate-round`
   (respaldo: `validate_round_basic`) → resultados → cada jugador marca listo con `set_round_ready` → cuando
   todos los conectados están listos, `advance_room` pasa a la siguiente ronda o a `_finish_game` (sin avance automático;
-  los desconectados >45 s no bloquean; migración `006_round_ready.sql`).
+  los desconectados >45 s no bloquean; migración `20261109000006_round_ready.sql`).
 - STOP: disponible al completar el 75 % de las categorías (redondeado arriba; `stop_threshold`, migración
-  `009_stop_threshold.sql`). El botón solo aparece al llegar a ese mínimo.
+  `20261109000009_stop_threshold.sql`). El botón solo aparece al llegar a ese mínimo.
 - Puntos: 10 única, 5 repetida, 0 inválida/vacía/dudosa. 2 impugnaciones por partida (`submit_dispute` →
   `resolve-dispute`, respaldo `resolve_dispute_basic`).
 - XP por nivel: `250 * nivel`. Logros en `achievements`.
@@ -132,21 +134,40 @@ sube al repo (`.gitignore`). Proyecto Supabase: `liejnmzxlpctqybecrbu`; la app y
 
 ## Invitados
 - Invitado (anónimo) = solo jugar: apodo + avatar (nombre único automático `apodo####`), sin amigos
-  (`008_guests.sql` bloquea amistades y búsqueda de invitados). iOS: "Guardar mi progreso" vincula Apple
+  (`20261109000008_guests.sql` bloquea amistades y búsqueda de invitados). iOS: "Guardar mi progreso" vincula Apple
   (`linkIdentityWithIdToken`). Web: vincula un correo (ver Versión web). "Salir del modo invitado" borra la cuenta
   temporal; los invitados inactivos > 7 días se borran solos (pg_cron).
 
 ## Pendientes (estado al 2026-11-11)
 
-### Correo y autenticación (prioridad alta)
+### Para activar lo implementado el 2026-11-11 (código listo en el repo, falta aplicarlo)
+- [x] Migraciones `20261111000012` a `20261111000017` aplicadas con psql el 2026-11-11 (prueba de humo OK).
+- [ ] `20261111000018_purchases.sql` va **después** de desplegar `app-store` y publicar la app que usa
+      `API.verifyPurchase` (quita `grant_item` a los clientes).
+- [ ] **Desplegar Edge Functions** (requiere `supabase login` con la cuenta dueña):
+      `supabase functions deploy validate-round resolve-dispute --project-ref liejnmzxlpctqybecrbu` y
+      `supabase functions deploy send-push app-store --no-verify-jwt --project-ref liejnmzxlpctqybecrbu`.
+- [ ] **Push (APNs)**: crear una clave APNs (.p8) en developer.apple.com y configurar secretos `APNS_KEY` (contenido
+      del .p8), `APNS_KEY_ID`, `APNS_TEAM_ID=JZ9Z9GWH7P`, `PUSH_WEBHOOK_SECRET`; en la base:
+      `select vault.create_secret('<mismo PUSH_WEBHOOK_SECRET>', 'push_webhook_secret');`. Sin eso el trigger no envía nada.
+- [ ] **Compras**: en App Store Connect → App Information → App Store Server Notifications (v2), URL
+      `https://liejnmzxlpctqybecrbu.supabase.co/functions/v1/app-store` (producción y sandbox).
+- [ ] Auth → URL Configuration: añadir el redirect `tutifruti://**` (enlaces de confirmar cuenta y restablecer
+      contraseña que abren la app).
+- [ ] Moderador: `update profiles set is_admin = true where username = '<tu usuario>';` → aparece "Moderación" en el
+      perfil web (`/moderacion`).
+- [ ] Borrar datos de prueba con `supabase/scripts/cleanup_test_data.sql` (revisar primero con los `select` del archivo).
+- [ ] Si se usa `supabase db push`: las migraciones ya tienen formato timestamp, pero las aplicadas a mano no están
+      registradas; marcar con `supabase migration repair --status applied 20261109000001 … 20261109000011` (y las que
+      se apliquen por psql).
+
+### Correo y autenticación
 - [ ] **SMTP propio** en Supabase (p. ej. Resend con dominio `tutifruti.site`): el correo por defecto solo entrega a
       miembros del equipo, así que registro, "olvidé mi contraseña" y "guardar progreso" del invitado en web no llegan
-      a usuarios reales.
+      a usuarios reales. (Se hará después.)
 - [ ] **Plantillas de correo** (Auth → Emails) en español y con enlace
       `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=<signup|recovery|email_change>`. Sin esto, un
-      correo pedido desde el iPhone (PKCE) no se puede completar al abrirlo en otro dispositivo.
-- [ ] iOS: pasar `redirectTo` en `resetPasswordForEmail`/registro y tener pantalla para la nueva contraseña (hoy solo
-      "Cambiar contraseña" en Cuenta). Con las plantillas `token_hash`, el enlace abre la web y ahí se cambia.
+      correo pedido desde el iPhone (PKCE) solo se completa al abrirlo en el mismo iPhone.
 - [ ] Decidir si se mantiene la confirmación por correo (`mailer_autoconfirm: false`).
 - [ ] Probar Sign in with Apple en un dispositivo/simulador con Apple ID (configurado el 2026-11-10).
 - [ ] Iniciar sesión con Apple en la web: requiere Services ID + clave .p8 en Supabase (OAuth web).
@@ -155,41 +176,44 @@ sube al repo (`.gitignore`). Proyecto Supabase: `liejnmzxlpctqybecrbu`; la app y
 
 ### Pruebas
 - [ ] **Probar end-to-end en el simulador con dos cuentas** (sala privada, pública, ronda, STOP, validación IA,
-      resultados, impugnación, clasificación final, subida de nivel).
-- [x] Web probada contra un bot (2026-11-11): ronda, STOP, validación IA, impugnación (resuelta por la 2.ª IA),
-      reacciones, final, logros y avisos.
-- [ ] Probar la web en ancho de móvil y en Safari/iPhone; partida mixta web + iOS en la misma sala.
-- [ ] Borrar datos de prueba: sala "Prueba IA" y usuarios anónimos `pruebaa*`/`pruebab*` (2026-11-10).
-- [ ] Tests (unitarios del store y UI tests) y CI (GitHub Actions: `svelte-check` + `build` de `webapp/`).
+      resultados, impugnación, clasificación final, subida de nivel), idealmente tras aplicar las migraciones nuevas.
+- [ ] Probar en Safari/iPhone y una partida mixta web + iOS en la misma sala.
+- [ ] UI tests de iOS (hay unitarios en `TutifrutiTests/`).
 
-### Funcionalidad que falta o está simplificada
-- [ ] **Notificaciones push (APNs)**: hoy solo hay notificaciones in-app (tabla `notifications` + realtime + toast).
-      Falta registro de device token, tabla de tokens y Edge Function/trigger que envíe a APNs respetando `notif_prefs`.
-      (En web se podría sumar Web Push.)
-- [ ] **Validar compras de StoreKit en el servidor**: `grant_item` se llama desde la app (cualquiera podría darse Plus).
-      Implementar App Store Server API / notificaciones de servidor v2 en una Edge Function.
+### Funcionalidad
 - [ ] Crear los productos reales en App Store Connect (IDs en `StoreManager` y `Products.storekit`). La web no vende.
+      Con `Products.storekit` (entorno Xcode) las compras no pasan la verificación del servidor: probar con sandbox.
 - [ ] Publicar la app en App Store y enlazarla desde la landing (hoy dice "también en iPhone" sin enlace).
-- [ ] **Temas visuales** ("Pizarra", "Neón"): se guardan en `profiles.theme` pero la UI no los aplica todavía.
-- [ ] **Idioma de juego**: se guarda en `profiles.language` pero la IA y la UI siguen en español.
-- [ ] Notificación "amigo conectado" (`friend_online`) y "inicio de temporada" (`season`): las preferencias existen,
-      pero nada las genera.
-- [ ] Logros `polyglot` y `season_top100` no se desbloquean (no hay lógica; la web los oculta); cierre de temporada y
-      recompensas de temporada no implementados.
-- [ ] Moderación: los reportes se guardan en `reports` pero no hay panel ni acciones; silenciar solo filtra el chat
-      en cliente.
-- [ ] El árbitro a veces marca `checks.letter = true` en respuestas que no empiezan con la letra (visto con "Mesa" en
-      ronda D): revisar el prompt/esquema de `validate-round`.
-- [ ] `public.rooms`/`room_players`/`rounds`/`profiles` son legibles por cualquier usuario autenticado; endurecer RLS
-      si se necesita más privacidad.
-- [ ] Pantalla de lanzamiento personalizada en iOS.
-- [ ] Renombrar migraciones al formato con timestamp del CLI si se va a usar `supabase db push`.
+- [ ] Web Push (opcional).
+- [ ] La UI sigue en español aunque el idioma de juego sea inglés/portugués (solo cambia la validación y las letras).
 - [ ] SEO: dar de alta https://tutifruti.site en Google Search Console y enviar el `sitemap.xml`.
+
+### Implementado el 2026-11-11 (base aplicada; faltan las Edge Functions y la config de push/compras, ver arriba)
+- [x] Guardia de letra en el servidor (`_finish_validation`) y en `validate-round` (Ñ ≠ N); el prompt revisa la 1.ª letra.
+- [x] RLS: salas/jugadores visibles solo para miembros (o si la sala es pública); rondas solo para miembros.
+- [x] "Amigo conectado" desde `heartbeat` (vuelve tras ≥ 15 min; 1 aviso cada 2 h por amigo). Temporadas retiradas:
+      sin preferencia `seasons` ni logro `season_top100`.
+- [x] Idioma de juego: `rooms.language` = idioma del anfitrión; letras por idioma; la IA valida en ese idioma; logro
+      **Políglota** (partidas terminadas en 2 idiomas). Se ve en el lobby y en salas públicas (iOS y web).
+- [x] Moderación: silencios aplicados en el servidor (RLS del chat), suspensiones (`profiles.banned_until`) que impiden
+      crear/unirse/escribir, panel web `/moderacion` (`admin_reports`, `admin_resolve_report`, `admin_unban`).
+- [x] Push APNs: `push_tokens`, `register_push_token`, trigger `push_notification` (pg_net) → `send-push`; iOS pide
+      permiso al entrar (`PushManager`), abre la pestaña correcta al tocar y pone el globo con los no leídos.
+- [x] Compras validadas en el servidor: `app-store` verifica el JWS de StoreKit 2 (cadena hasta Apple Root CA G3),
+      `appAccountToken` = id del jugador, tabla `purchases`, `plus_until` y cron horario `expire_plus`.
+- [x] Temas Pizarra (nivel 5) y Neón (Plus): `ThemeStore`/`ThemePalette` en iOS (se equipan en Tienda) y
+      `src/lib/themes.ts` en web (Perfil → Tema).
+- [x] iOS: restablecer contraseña y confirmar cuenta con `redirectTo: tutifruti://auth/callback` + `NewPasswordView`.
+- [x] Pantalla de lanzamiento con `logo_badge`.
+- [x] Tests: Vitest en `webapp/` (`npm test`), XCTest `TutifrutiTests`, `deno test` de `_shared/`; CI en
+      `.github/workflows/ci.yml` (web, Edge Functions, iOS).
+- [x] Migraciones renombradas a formato timestamp del CLI.
+- [x] Web revisada a 375 px: sin desbordamiento horizontal en landing, páginas legales y `/jugar`.
 
 ### Hecho recientemente
 - [x] Edge Functions desplegadas y `GEMINI_API_KEY` configurado (2026-11-10).
 - [x] Auth: anonymous sign-ins, Apple nativo, **Allow manual linking**, URL Configuration con tutifruti.site (2026-11-11).
-- [x] pg_cron (`011_cleanup_cron.sql`, 2026-11-11): `cleanup_guests()` diario 04:30 UTC y `cleanup_rooms()` cada 15 min
+- [x] pg_cron (`20261109000011_cleanup_cron.sql`, 2026-11-11): `cleanup_guests()` diario 04:30 UTC y `cleanup_rooms()` cada 15 min
       (cancela salas `waiting`/`playing` sin nadie conectado hace > 30 min).
 - [x] Páginas reales de Términos y Privacidad (`tutifruti.site/terminos`, `/privacidad`), enlazadas desde iOS y web.
 - [x] Landing + SEO, versión web completa y despliegue automático GitHub → Vercel (2026-11-11).

@@ -1,6 +1,6 @@
 /* Estilo "arcade frutal" de Tutifruti (mismo sistema que iOS: Views/Components/GameTheme.swift). */
 :root {
-	--deep: #0d4554; --deeper: #082c38; --header: #125c6b; --night: #0a1733;
+	--deep: #0d4554; --deeper: #082c38; --header: #125c6b; --night: #0a1733; --glow: 255, 148, 31;
 	--cream: #fff8e6; --ink: #2e1c14;
 	--panel: rgba(255, 255, 255, 0.1); --panel-stroke: rgba(255, 255, 255, 0.18);
 	--tangerine: #ff941f; --lime: #8cd933; --cherry: #ed385c; --sky: #40b8f2; --lemon: #ffd23f; --grape: #9e61f2;

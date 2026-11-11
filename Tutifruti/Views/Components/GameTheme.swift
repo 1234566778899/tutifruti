@@ -4,12 +4,43 @@ import SwiftUI
 // Fondo verde azulado profundo con patrón de frutas y letras, tarjetas crema con relieve,
 // botones "caramelo" con borde inferior 3D y títulos gruesos con contorno. Original de Tutifruti.
 
+/// Tema visual equipado (`profiles.theme`): cambia los colores de fondo. Es @Observable, así que las vistas que leen
+/// `Game.deep` etc. se redibujan solas al cambiar de tema.
+@MainActor @Observable
+final class ThemeStore {
+    static let shared = ThemeStore()
+    var key = "clasico"
+    var palette: ThemePalette { ThemePalette.all[key] ?? ThemePalette.all["clasico"]! }
+}
+
+struct ThemePalette {
+    var deep: Color, deeper: Color, header: Color, night: Color
+    /// Resplandor superior del fondo.
+    var glow: Color
+
+    static let all: [String: ThemePalette] = [
+        // verde azulado profundo con resplandor naranja (original)
+        "clasico": .init(deep: Color(red: 0.05, green: 0.27, blue: 0.33), deeper: Color(red: 0.03, green: 0.17, blue: 0.22),
+                         header: Color(red: 0.07, green: 0.36, blue: 0.42), night: Color(red: 0.04, green: 0.09, blue: 0.20),
+                         glow: Color(red: 1.0, green: 0.58, blue: 0.12)),
+        // pizarra de escuela: verde grisáceo con resplandor de tiza
+        "pizarra": .init(deep: Color(red: 0.14, green: 0.22, blue: 0.19), deeper: Color(red: 0.08, green: 0.13, blue: 0.11),
+                         header: Color(red: 0.20, green: 0.30, blue: 0.26), night: Color(red: 0.07, green: 0.09, blue: 0.08),
+                         glow: Color(red: 0.95, green: 0.95, blue: 0.85)),
+        // neón: violeta noche con resplandor magenta
+        "neon": .init(deep: Color(red: 0.13, green: 0.05, blue: 0.27), deeper: Color(red: 0.07, green: 0.02, blue: 0.16),
+                      header: Color(red: 0.22, green: 0.07, blue: 0.40), night: Color(red: 0.02, green: 0.01, blue: 0.09),
+                      glow: Color(red: 1.0, green: 0.20, blue: 0.75)),
+    ]
+}
+
 enum Game {
-    // Fondo
-    static let deep = Color(red: 0.05, green: 0.27, blue: 0.33)       // verde azulado profundo
-    static let deeper = Color(red: 0.03, green: 0.17, blue: 0.22)
-    static let header = Color(red: 0.07, green: 0.36, blue: 0.42)
-    static let night = Color(red: 0.04, green: 0.09, blue: 0.20)       // azul noche (parte baja del fondo)
+    // Fondo (según el tema equipado)
+    @MainActor static var deep: Color { ThemeStore.shared.palette.deep }
+    @MainActor static var deeper: Color { ThemeStore.shared.palette.deeper }
+    @MainActor static var header: Color { ThemeStore.shared.palette.header }
+    @MainActor static var night: Color { ThemeStore.shared.palette.night }
+    @MainActor static var glow: Color { ThemeStore.shared.palette.glow }
     // Superficies
     static let cream = Color(red: 1.0, green: 0.97, blue: 0.90)
     static let creamEdge = Color(red: 0.93, green: 0.82, blue: 0.64)
@@ -81,7 +112,7 @@ struct GameBackground: View {
                 }
                 .opacity(0.045)
             }
-            RadialGradient(colors: [Game.tangerine.opacity(0.16), .clear], center: UnitPoint(x: 0.5, y: 0.08), startRadius: 0, endRadius: 380)
+            RadialGradient(colors: [Game.glow.opacity(0.16), .clear], center: UnitPoint(x: 0.5, y: 0.08), startRadius: 0, endRadius: 380)
             // viñeta: oscurece los bordes para centrar la atención
             RadialGradient(colors: [.clear, .black.opacity(0.35)], center: .center, startRadius: 220, endRadius: 650)
         }

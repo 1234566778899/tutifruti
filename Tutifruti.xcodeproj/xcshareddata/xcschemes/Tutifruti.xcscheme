@@ -39,6 +39,17 @@
          </BuildableReference>
       </MacroExpansion>
       <Testables>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "802EF856F0504FA5567C4DFB"
+               BuildableName = "TutifrutiTests.xctest"
+               BlueprintName = "TutifrutiTests"
+               ReferencedContainer = "container:Tutifruti.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
       <CommandLineArguments>
       </CommandLineArguments>

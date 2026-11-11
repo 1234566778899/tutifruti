@@ -193,7 +193,8 @@ struct RegisterView: View {
         loading = true
         defer { loading = false }
         do {
-            let res = try await supabase.auth.signUp(email: email.trimmingCharacters(in: .whitespaces), password: password)
+            let res = try await supabase.auth.signUp(email: email.trimmingCharacters(in: .whitespaces), password: password,
+                                                    redirectTo: Config.authCallbackURL)
             if res.session == nil { needsConfirmation = true }
             // Con sesión, AppState pasa a "needsProfile" (paso 2) automáticamente.
         } catch {
@@ -379,7 +380,7 @@ struct RecoverView: View {
                 PrimaryButton(title: "Enviar enlace", systemImage: "envelope.fill", loading: loading) {
                     loading = true
                     defer { loading = false }
-                    do { try await supabase.auth.resetPasswordForEmail(email); sent = true }
+                    do { try await supabase.auth.resetPasswordForEmail(email.trimmingCharacters(in: .whitespaces), redirectTo: Config.authCallbackURL); sent = true }
                     catch { self.error = friendlyError(error) }
                 }
                 .disabled(!email.contains("@"))
@@ -422,5 +423,54 @@ struct RulesView: View {
             .padding(.vertical, 6)
         }
         .gameTitle("Reglas")
+    }
+}
+
+// MARK: Nueva contraseña (desde el enlace de recuperación)
+struct NewPasswordView: View {
+    @Environment(AppState.self) private var app
+    @Environment(\.dismiss) private var dismiss
+    @State private var password = ""
+    @State private var confirm = ""
+    @State private var loading = false
+    @State private var error: String?
+
+    private var valid: Bool { password.count >= 6 && password == confirm }
+
+    var body: some View {
+        NavigationStack {
+            GameForm {
+                Section {
+                    SecureField("Nueva contraseña", text: $password).textContentType(.newPassword)
+                    SecureField("Repite la contraseña", text: $confirm).textContentType(.newPassword)
+                } header: {
+                    SectionTitle(text: "Elige una contraseña nueva para tu cuenta.")
+                        .listRowInsets(EdgeInsets(top: 0, leading: 4, bottom: 6, trailing: 4))
+                } footer: {
+                    if !confirm.isEmpty && password != confirm { Text("Las contraseñas no coinciden.") }
+                    else { Text("Mínimo 6 caracteres.") }
+                }
+                Section {
+                    PrimaryButton(title: "Guardar contraseña", systemImage: "key.fill", loading: loading) {
+                        loading = true
+                        defer { loading = false }
+                        do {
+                            try await supabase.auth.update(user: UserAttributes(password: password))
+                            app.toast = "Contraseña actualizada"
+                            app.needsNewPassword = false
+                            dismiss()
+                        } catch { self.error = friendlyError(error) }
+                    }
+                    .disabled(!valid)
+                    .listRowInsets(EdgeInsets()).listRowBackground(Color.clear)
+                }
+            }
+            .gameTitle("Nueva contraseña")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) { Button("Ahora no") { app.needsNewPassword = false; dismiss() } }
+            }
+            .errorAlert($error)
+        }
     }
 }
