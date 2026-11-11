@@ -93,4 +93,61 @@ final class ScreenshotTests: XCTestCase {
         app.swipeUp()
         shot("06_resultados_detalle")
     }
+
+    /// Partida pausada para grabar video (el simulador se graba aparte con `simctl io recordVideo`).
+    func testVideo() throws {
+        continueAfterFailure = false
+        let pause = { (s: Double) in Thread.sleep(forTimeInterval: s) }
+        let slowType = { (el: XCUIElement, text: String) in
+            for ch in text { el.typeText(String(ch)); pause(0.09) }
+        }
+        app.launch()
+        let play = app.buttons["Jugar ahora"]
+        XCTAssertTrue(play.waitForExistence(timeout: 30))
+        pause(1.5)
+        play.tap()
+        let nick = app.textFields["Tu apodo"]
+        XCTAssertTrue(nick.waitForExistence(timeout: 30))
+        nick.tap(); slowType(nick, "Carlos"); app.typeText("\n")
+        let begin = app.buttons["Empezar a jugar"]
+        if !begin.isHittable { app.swipeUp() }
+        begin.tap()
+        allowSystemAlert()
+        let create = app.buttons["Crear sala"]
+        XCTAssertTrue(create.waitForExistence(timeout: 30))
+        allowSystemAlert()
+        pause(2.5)
+        create.tap()
+        let confirm = app.buttons["Crear sala"]
+        XCTAssertTrue(confirm.waitForExistence(timeout: 15))
+        pause(2)
+        app.swipeUp(); pause(1)
+        confirm.tap()
+        let start = app.buttons["Iniciar partida"]
+        XCTAssertTrue(start.waitForExistence(timeout: 30))
+        let ready = expectation(for: NSPredicate(format: "isEnabled == true"), evaluatedWith: start)
+        wait(for: [ready], timeout: 90)
+        pause(2.5)
+        start.tap()
+        let data = try XCTUnwrap(waitFile("answers.json", timeout: 60))
+        let answers = try JSONDecoder().decode([String].self, from: data)
+        XCTAssertTrue(app.textFields.firstMatch.waitForExistence(timeout: 40))
+        pause(2.5)
+        for (i, answer) in answers.enumerated() {
+            let field = app.textFields.element(boundBy: i)
+            guard field.waitForExistence(timeout: 5) else { break }
+            if i > 0 { field.tap() }
+            slowType(field, answer)
+            pause(0.3)
+        }
+        let stop = app.buttons["¡STOP!"]
+        XCTAssertTrue(stop.waitForExistence(timeout: 10))
+        pause(1.2)
+        stop.tap()
+        _ = waitFile("results.flag", timeout: 90)
+        pause(9)
+        app.swipeUp(); pause(4)
+        app.swipeDown(); pause(3)
+    }
+
 }

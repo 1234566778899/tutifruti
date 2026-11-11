@@ -30,6 +30,7 @@ for (let i = 0; i < 240 && !room; i++) {
 }
 if (!room) throw new Error('No apareció ninguna sala');
 console.log('sala', room.code, room.categories.join(', '));
+await sleep(Number(process.env.JOIN_DELAY ?? 0));
 
 // 2) Entran los jugadores simulados
 const ids = [];
@@ -42,7 +43,7 @@ for (const b of WORDS.bots) {
 	ok(await c.rpc('join_room_by_code', { p_code: room.code }), 'unirse');
 	ok(await c.rpc('set_ready', { p_room: room.id, p_ready: true }), 'listo');
 	bots.push({ ...b, c });
-	await sleep(1200);
+	await sleep(Number(process.env.JOIN_GAP ?? 1200));
 }
 const beat = setInterval(() => bots.forEach((b) => b.c.rpc('heartbeat', { p_room: room.id })), 10_000);
 
