@@ -302,11 +302,21 @@ final class AppState {
         let isScheme = url.scheme == Config.deepLinkScheme
         let isWeb = (url.scheme == "https" || url.scheme == "http") && url.host == Config.inviteHost
         guard isScheme || isWeb else { return }
-        // Enlaces de correo (confirmar cuenta, restablecer contraseña): tutifruti://auth/callback?code=…
+        // Enlaces de correo (confirmar cuenta, restablecer contraseña). La plantilla abre tutifruti.site/auth/confirm,
+        // que en iPhone reenvía a tutifruti://auth/callback?token_hash=…&type=…; también se acepta ?code=… (PKCE).
         if isScheme, url.host == "auth" {
+            let items = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems ?? []
+            let tokenHash = items.first { $0.name == "token_hash" }?.value
+            let type = items.first { $0.name == "type" }?.value ?? "email"
             Task {
-                do { _ = try await supabase.auth.session(from: url) }
-                catch { toast = "El enlace venció o ya se usó. Pide uno nuevo." }
+                do {
+                    if let tokenHash {
+                        _ = try await supabase.auth.verifyOTP(tokenHash: tokenHash, type: EmailOTPType(rawValue: type) ?? .email)
+                        if type == "recovery" { needsNewPassword = true } else { toast = "¡Correo confirmado!" }
+                    } else {
+                        _ = try await supabase.auth.session(from: url)
+                    }
+                } catch { toast = "El enlace venció o ya se usó. Pide uno nuevo." }
             }
             return
         }

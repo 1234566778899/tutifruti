@@ -152,11 +152,10 @@ sube al repo (`.gitignore`). Proyecto Supabase: `liejnmzxlpctqybecrbu`; la app y
       `select vault.create_secret('<mismo PUSH_WEBHOOK_SECRET>', 'push_webhook_secret');`. Sin eso el trigger no envía nada.
 - [ ] **Compras**: en App Store Connect → App Information → App Store Server Notifications (v2), URL
       `https://liejnmzxlpctqybecrbu.supabase.co/functions/v1/app-store` (producción y sandbox).
-- [ ] Auth → URL Configuration: añadir el redirect `tutifruti://**` (enlaces de confirmar cuenta y restablecer
-      contraseña que abren la app).
+- [x] Auth → URL Configuration: redirect `tutifruti://**` añadido (2026-11-11).
 - [ ] Moderador: `update profiles set is_admin = true where username = '<tu usuario>';` → aparece "Moderación" en el
       perfil web (`/moderacion`).
-- [ ] Borrar datos de prueba con `supabase/scripts/cleanup_test_data.sql` (revisar primero con los `select` del archivo).
+- [x] Datos de prueba borrados (sala "Prueba IA" y 2 invitados `prueba*`, 2026-11-11).
 - [ ] Si se usa `supabase db push`: las migraciones ya tienen formato timestamp, pero las aplicadas a mano no están
       registradas; marcar con `supabase migration repair --status applied 20261109000001 … 20261109000011` (y las que
       se apliquen por psql).
@@ -165,9 +164,9 @@ sube al repo (`.gitignore`). Proyecto Supabase: `liejnmzxlpctqybecrbu`; la app y
 - [ ] **SMTP propio** en Supabase (p. ej. Resend con dominio `tutifruti.site`): el correo por defecto solo entrega a
       miembros del equipo, así que registro, "olvidé mi contraseña" y "guardar progreso" del invitado en web no llegan
       a usuarios reales. (Se hará después.)
-- [ ] **Plantillas de correo** (Auth → Emails) en español y con enlace
-      `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=<signup|recovery|email_change>`. Sin esto, un
-      correo pedido desde el iPhone (PKCE) solo se completa al abrirlo en el mismo iPhone.
+- [ ] **Plantillas de correo**: listas en `supabase/templates/` (español, enlace `token_hash` + `redirect_to`). Supabase
+      solo deja editarlas con SMTP propio: pegarlas en Auth → Emails al configurar el SMTP. `/auth/confirm` reenvía a la
+      app en iPhone (`tutifruti://auth/callback?token_hash=…`) si el correo se pidió desde la app.
 - [ ] Decidir si se mantiene la confirmación por correo (`mailer_autoconfirm: false`).
 - [ ] Probar Sign in with Apple en un dispositivo/simulador con Apple ID (configurado el 2026-11-10).
 - [ ] Iniciar sesión con Apple en la web: requiere Services ID + clave .p8 en Supabase (OAuth web).
@@ -189,7 +188,7 @@ sube al repo (`.gitignore`). Proyecto Supabase: `liejnmzxlpctqybecrbu`; la app y
 - [ ] Search Console: la propiedad de **dominio** `tutifruti.site` quedó creada sin verificar; para verificarla, añadir en
       Vercel → Domains → tutifruti.site un TXT en la raíz con
       `google-site-verification=jF0lvz9nx2PJJXsV2DBnR-lO50UC1f45Kj9OsheDsms` y pulsar Verificar (cubre también `www`).
-- [ ] Opcional: vincular Search Console con la propiedad de Analytics (Administrar → Vinculaciones de productos).
+- [x] Search Console vinculado con la propiedad de Analytics "Tutifruti AI" (2026-11-11).
 
 ### Implementado el 2026-11-11 (base aplicada; faltan las Edge Functions y la config de push/compras, ver arriba)
 - [x] Guardia de letra en el servidor (`_finish_validation`) y en `validate-round` (Ñ ≠ N); el prompt revisa la 1.ª letra.
