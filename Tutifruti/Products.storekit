@@ -1,0 +1,19 @@
+{
+  "identifier" : "A1B2C3D4",
+  "nonRenewingSubscriptions" : [],
+  "products" : [
+    { "displayPrice" : "0.99", "familyShareable" : false, "internalID" : "100001", "localizations" : [ { "description" : "Avatar Zorro astuto", "displayName" : "Zorro astuto", "locale" : "es_MX" } ], "productID" : "com.carlosordaz.tutifruti.avatar.fox", "referenceName" : "Avatar Zorro", "type" : "NonConsumable" },
+    { "displayPrice" : "0.99", "familyShareable" : false, "internalID" : "100002", "localizations" : [ { "description" : "Avatar Robot letrado", "displayName" : "Robot letrado", "locale" : "es_MX" } ], "productID" : "com.carlosordaz.tutifruti.avatar.robot", "referenceName" : "Avatar Robot", "type" : "NonConsumable" },
+    { "displayPrice" : "1.99", "familyShareable" : false, "internalID" : "100003", "localizations" : [ { "description" : "Avatar Gato STOP", "displayName" : "Gato STOP", "locale" : "es_MX" } ], "productID" : "com.carlosordaz.tutifruti.avatar.cat", "referenceName" : "Avatar Gato", "type" : "NonConsumable" }
+  ],
+  "settings" : { "_applicationInternalID" : "6400000000", "_developerTeamID" : "", "_locale" : "es_MX", "_storefront" : "MEX" },
+  "subscriptionGroups" : [
+    { "id" : "21000001", "localizations" : [], "name" : "Tutifruti Plus",
+      "subscriptions" : [
+        { "adHocOffers" : [], "codeOffers" : [], "displayPrice" : "2.99", "familyShareable" : false, "groupNumber" : 1, "internalID" : "200001", "introductoryOffer" : null, "localizations" : [ { "description" : "Tutifruti Plus mensual", "displayName" : "Plus mensual", "locale" : "es_MX" } ], "productID" : "com.carlosordaz.tutifruti.plus.monthly", "recurringSubscriptionPeriod" : "P1M", "referenceName" : "Plus mensual", "subscriptionGroupID" : "21000001", "type" : "RecurringSubscription" },
+        { "adHocOffers" : [], "codeOffers" : [], "displayPrice" : "19.99", "familyShareable" : false, "groupNumber" : 1, "internalID" : "200002", "introductoryOffer" : null, "localizations" : [ { "description" : "Tutifruti Plus anual", "displayName" : "Plus anual", "locale" : "es_MX" } ], "productID" : "com.carlosordaz.tutifruti.plus.yearly", "recurringSubscriptionPeriod" : "P1Y", "referenceName" : "Plus anual", "subscriptionGroupID" : "21000001", "type" : "RecurringSubscription" }
+      ]
+    }
+  ],
+  "version" : { "major" : 4, "minor" : 0 }
+}

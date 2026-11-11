@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /sala/
+Disallow: /j/
+Disallow: /a/
+Disallow: /restablecer
+
+Sitemap: https://tutifruti.site/sitemap.xml

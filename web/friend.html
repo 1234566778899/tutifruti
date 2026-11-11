@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>¡Seamos amigos en Tutifruti AI!</title>
+<meta name="description" content="Toca el enlace para agregarme como amigo en Tutifruti AI.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Tutifruti AI">
+<meta property="og:title" content="¡Agrégame como amigo en Tutifruti!">
+<meta property="og:description" content="Toca el enlace y seremos amigos automáticamente para jugar Stop / Basta.">
+<meta property="og:image" content="https://tutifruti-ai.vercel.app/img/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#ff7a19">
+<link rel="icon" href="/img/icon.png">
+<link rel="apple-touch-icon" href="/img/icon.png">
+<style>
+  :root { --orange: #ff8c1a; --pink: #fa4085; --ink: #1d1d1f; --muted: #6e6e73; --card: #ffffff; --bg: #fff7f0; }
+  @media (prefers-color-scheme: dark) { :root { --ink: #f5f5f7; --muted: #a1a1a6; --card: #1c1c1e; --bg: #0d0d0f; } }
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100vh; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Rounded", system-ui, sans-serif;
+         color: var(--ink); background: var(--bg); display: flex; align-items: center; justify-content: center; padding: 24px 16px; }
+  body::before { content: ""; position: fixed; inset: 0; z-index: -1;
+         background: radial-gradient(60% 40% at 15% 10%, rgba(255,140,26,.30), transparent 70%),
+                     radial-gradient(55% 40% at 90% 30%, rgba(250,64,133,.25), transparent 70%),
+                     radial-gradient(50% 40% at 30% 95%, rgba(255,204,51,.25), transparent 70%); }
+  .card { width: 100%; max-width: 420px; background: var(--card); border-radius: 28px; padding: 28px 22px 24px; text-align: center;
+          box-shadow: 0 20px 60px rgba(250,64,133,.18); }
+  .tuti { width: 150px; height: 150px; animation: bob 1.4s ease-in-out infinite alternate; transform-origin: bottom center; }
+  @keyframes bob { from { transform: rotate(-3deg) translateY(0); } to { transform: rotate(3deg) translateY(-6px); } }
+  h1 { font-size: 28px; margin: 8px 0 6px; font-weight: 900;
+       background: linear-gradient(90deg, var(--orange), var(--pink)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  p { color: var(--muted); margin: 0 0 18px; line-height: 1.4; }
+  .code { display: inline-block; font: 800 26px ui-monospace, "SF Mono", Menlo, monospace; letter-spacing: 2px; padding: 10px 18px;
+          border-radius: 14px; background: rgba(255,140,26,.12); margin-bottom: 20px; }
+  .btn { display: block; width: 100%; padding: 16px; border-radius: 999px; border: 0; font-size: 18px; font-weight: 800; text-decoration: none;
+         color: #fff; background: linear-gradient(90deg, var(--orange), var(--pink)); box-shadow: 0 8px 20px rgba(250,64,133,.35); }
+  .btn:active { transform: scale(.97); }
+  .secondary { margin-top: 12px; background: transparent; color: var(--orange); box-shadow: none; font-size: 15px; font-weight: 700; }
+  .hint { font-size: 13px; margin-top: 16px; }
+</style>
+</head>
+<body>
+<main class="card">
+  <img class="tuti" src="/img/tuti.png" alt="">
+  <h1>¡Te quieren de amigo!</h1>
+  <p>Abre <strong>Tutifruti AI</strong> y quedarán como amigos al instante.</p>
+    <a class="btn" id="open" href="#">Agregar amigo</a>
+  <a class="btn secondary" id="web" href="https://tutifruti.site/jugar">Abrir en el navegador</a>
+  <p class="hint" id="hint">Necesitas una cuenta de Tutifruti AI (no funciona en modo invitado). Puedes usar la app o la web.</p>
+</main>
+<script>
+  // /a/<token> → tutifruti://friend/<token>
+  const raw = decodeURIComponent(location.pathname.split("/").filter(Boolean).pop() || "");
+  const token = /^[A-Za-z0-9]{8,32}$/.test(raw) ? raw : "";
+  const open = document.getElementById("open");
+  const ios = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  if (token) document.getElementById("web").href = "https://tutifruti.site/a/" + token;
+  if (token && !ios) location.replace("https://tutifruti.site/a/" + token);
+  if (token) {
+    open.href = "tutifruti://friend/" + token;
+    setTimeout(() => { location.href = open.href; }, 350);
+  } else {
+    open.style.display = "none";
+    document.getElementById("hint").textContent = "Este enlace no es válido.";
+  }
+</script>
+</body>
+</html>

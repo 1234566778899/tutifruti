@@ -1,0 +1,21 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": [
+          "JZ9Z9GWH7P.com.carlosordaz.tutifruti"
+        ],
+        "components": [
+          {
+            "/": "/j/*",
+            "comment": "Invitaciones a salas"
+          },
+          {
+            "/": "/a/*",
+            "comment": "Enlaces de amistad"
+          }
+        ]
+      }
+    ]
+  }
+}

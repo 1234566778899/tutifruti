@@ -1,0 +1,24 @@
+{
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/j/:code",
+      "destination": "/join"
+    },
+    {
+      "source": "/a/:token",
+      "destination": "/friend"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/.well-known/apple-app-site-association",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        }
+      ]
+    }
+  ]
+}

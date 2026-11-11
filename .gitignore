@@ -1,0 +1,13 @@
+.DS_Store
+xcuserdata/
+DerivedData/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+build/
+supabase/.temp/
+CLAUDE.local.md
+.env
+.env.*
+.vercel
+node_modules/
+.svelte-kit/
+*.xcuserstate

@@ -1,0 +1,48 @@
+begin;
+insert into auth.users (id, email, aud, role) values
+ ('00000000-0000-0000-0000-0000000000a1','a@test.dev','authenticated','authenticated'),
+ ('00000000-0000-0000-0000-0000000000b2','b@test.dev','authenticated','authenticated');
+set local role authenticated;
+select set_config('request.jwt.claims','{"sub":"00000000-0000-0000-0000-0000000000a1","role":"authenticated"}',true);
+select username_available('marce_stop');
+select (create_profile('marce_stop','🦊')).username;
+select set_config('request.jwt.claims','{"sub":"00000000-0000-0000-0000-0000000000b2","role":"authenticated"}',true);
+select (create_profile('lu.palabras','🦉')).username;
+select send_friend_request('00000000-0000-0000-0000-0000000000a1');
+select set_config('request.jwt.claims','{"sub":"00000000-0000-0000-0000-0000000000a1","role":"authenticated"}',true);
+select respond_friend_request('00000000-0000-0000-0000-0000000000b2', true);
+create temp table t as select * from create_room('Viernes de Stop',8,1,60,10,true,array['Nombre','País','Animal'],true);
+select code from t;
+select set_config('request.jwt.claims','{"sub":"00000000-0000-0000-0000-0000000000b2","role":"authenticated"}',true);
+select join_room_by_code((select code from t)) is not null as joined; select set_ready((select id from t), true);
+select set_config('request.jwt.claims','{"sub":"00000000-0000-0000-0000-0000000000a1","role":"authenticated"}',true);
+select start_game((select id from t));
+reset role;
+update rounds set starts_at = now() - interval '1 min' where room_id = (select id from t);
+set local role authenticated;
+create temp table rd as select * from rounds where room_id = (select id from t);
+select letter from rd;
+select save_answer((select id from rd),'Nombre', (select letter from rd)||'ariana');
+select save_answer((select id from rd),'País', (select letter from rd)||'éxico');
+select save_answer((select id from rd),'Animal', 'zzz');
+select call_stop((select id from rd));
+select set_config('request.jwt.claims','{"sub":"00000000-0000-0000-0000-0000000000b2","role":"authenticated"}',true);
+select save_answer((select id from rd),'País', (select letter from rd)||'éxico');
+reset role;
+update rounds set close_at = now() - interval '1 s' where id = (select id from rd);
+set local role authenticated;
+select close_round((select id from rd));
+select validate_round_basic((select id from rd));
+select user_id, category, value, status, points from answers where round_id = (select id from rd) order by user_id, category;
+select d from submit_dispute((select id from rd),'00000000-0000-0000-0000-0000000000b2','Nombre','my_valid','Tengo un nombre muy bueno') d \gset
+select status, resolution from resolve_dispute_basic(:'d');
+reset role;
+update rounds set next_at = now() - interval '1 s' where id = (select id from rd);
+set local role authenticated;
+select advance_room((select id from t));
+select user_id, score, final_rank, xp_gained from room_players where room_id = (select id from t);
+select username, level, xp, games_played, games_won from profiles;
+select kind, title, body from notifications order by id;
+select * from leaderboard('friends','week');
+select * from my_challenges();
+rollback;
