@@ -55,14 +55,25 @@ https://www.figma.com/design/P8AAzV4oac2pY8r4GKSKiQ/tutifruti?node-id=3260-2
   `AppState.sceneBecameActive()` reactiva notificaciones y vuelve a la partida en curso. Errores de red no muestran alertas.
 
 ## Versión web (`webapp/`)
-- SvelteKit + Svelte 5 (runes), `ssr = false`, adaptador Vercel. Usa las **mismas RPC/tablas** que iOS
-  (`src/lib/api.ts` ↔ `API.swift`, `src/lib/game/game.svelte.ts` ↔ `GameStore.swift`): web e iOS juegan en las mismas salas.
+- SvelteKit + Svelte 5 (runes), adaptador Vercel. Usa las **mismas RPC/tablas** que iOS (`src/lib/api.ts` ↔ `API.swift`,
+  `src/lib/game/game.svelte.ts` ↔ `GameStore.swift`, `src/lib/app.svelte.ts` ↔ `AppState.swift`): web e iOS juegan juntos.
 - Importes con alias `#lib/...` y extensión explícita (`.ts`, `.svelte.ts`). Arte y sonidos copiados en `static/`.
-- Responsive: una columna en móvil; en ≥1024 px la sala muestra jugadores y chat en un panel lateral.
+- **Rutas públicas prerenderizadas (SEO)**: `/` landing (`src/lib/landing/`: `RoundDemo` animado, `Seo` con OG/Twitter/
+  JSON-LD VideoGame + FAQPage, `SiteChrome`), `/como-jugar` (HowTo), `/terminos`, `/privacidad`. `static/`: `robots.txt`,
+  `sitemap.xml`, `manifest.webmanifest`, `og.png` (generada con `tools/make_og.py`), íconos PWA.
+- **Juego (grupo `(app)`, `ssr = false`, `noindex`)**: `/jugar` (inicio), `/salas`, `/crear` (con categorías por IA),
+  `/sala/[id]`, `/perfil` (avatar, nombre, estadísticas, logros, historial, ajustes, cuenta, guardar progreso del invitado),
+  `/avisos` (notificaciones in-app + realtime), `/amigos` (enlace, solicitudes, búsqueda, eliminar), `/restablecer`,
+  `/j/[code]`, `/a/[token]`. `/auth/confirm` verifica los enlaces de correo con `token_hash` (no depende de PKCE).
+- Resultados: detalle de respuesta (`AnswerSheet`: explicación, checks, impugnación, reporte/silenciar) y reacciones.
+- Invitado web → cuenta: `updateUser({email})` + confirmación, luego crear contraseña (Supabase no permite contraseña a un
+  anónimo sin correo verificado). En web no hay Iniciar sesión con Apple.
+- Responsive: una columna en móvil; en ≥900–1024 px paneles en dos columnas y la sala con jugadores/chat al lado.
 - Dev: `cd webapp && npm run dev`. Verificar: `npx svelte-check` y `npm run build`.
 - Producción: proyecto Vercel `tutifruti-web` → **https://tutifruti.site** (+ `www`), dominio de Namecheap con
-  nameservers `ns1/ns2.vercel-dns.com`. Despliegue **automático**: cada push a `main` en GitHub (`1234566778899/tutifruti`) despliega en Vercel
-  (root `webapp/`; solo construye si cambió esa carpeta).
+  nameservers `ns1/ns2.vercel-dns.com`. Despliegue **automático**: cada push a `main` despliega (root `webapp/`; solo
+  construye si cambió esa carpeta). El sitio de invitaciones (`web/`, proyecto `tutifruti-ai`) igual con root `web/`;
+  su portada redirige a tutifruti.site y en Android/computadora `/j/` y `/a/` abren la web.
 
 ## Repositorio
 - GitHub **público**: https://github.com/1234566778899/tutifruti (rama `main`). Nunca subir claves: van en `CLAUDE.local.md`
@@ -119,66 +130,76 @@ sube al repo (`.gitignore`). Proyecto Supabase: `liejnmzxlpctqybecrbu`; la app y
 - Auth → Apple: activado para inicio nativo (Client IDs = `com.carlosordaz.tutifruti`). Sin Secret Key: solo hace
   falta para OAuth web (Services ID + .p8), que la app no usa.
 
-## Pendientes (estado al 2026-11-10)
+## Invitados
+- Invitado (anónimo) = solo jugar: apodo + avatar (nombre único automático `apodo####`), sin amigos
+  (`008_guests.sql` bloquea amistades y búsqueda de invitados). iOS: "Guardar mi progreso" vincula Apple
+  (`linkIdentityWithIdToken`). Web: vincula un correo (ver Versión web). "Salir del modo invitado" borra la cuenta
+  temporal; los invitados inactivos > 7 días se borran solos (pg_cron).
 
-### Bloqueantes para probar el juego completo
-- [x] **Edge Functions desplegadas** (2026-11-10) desde el editor del dashboard (`validate-round`, `resolve-dispute`,
-      `categories-ai`), cada una como un solo archivo con `_shared/ai.ts` inlinado. Probado: el gateway acepta los JWT
-      ES256 de usuario (anónimo) y la función llega a Gemini. Para redesplegar con el CLI hace falta `supabase login`
-      con la cuenta dueña.
-- [x] **Secreto `GEMINI_API_KEY`** configurado (2026-11-10).
-- [ ] **Probar end-to-end en simulador con dos cuentas** (no se crearon cuentas de prueba). Verificar: sala privada,
-      partida pública, ronda, STOP, validación IA, resultados, impugnación, clasificación final, subida de nivel.
-- [x] Probado contra una ronda real (2026-11-10, vía REST con 2 usuarios anónimos): `validate-round` ~6 s, veredictos
-      correctos y `validated_by_ai = true`; `resolve-dispute` ~4 s; `categories-ai` ~2-3 s. Quedaron datos de prueba
-      (sala "Prueba IA" y usuarios anónimos `pruebaa*`/`pruebab*`) para borrar a mano.
+## Pendientes (estado al 2026-11-11)
 
-### Invitados
-- Invitado (anónimo) = solo jugar: apodo + avatar (nombre único automático `apodo####`), solo pestaña Inicio, sin amigos
-  ni perfil (`008_guests.sql` bloquea amistades y búsqueda de invitados). "Guardar mi progreso" vincula Apple
-  (`linkIdentityWithIdToken`); "Salir del modo invitado" borra la cuenta temporal.
-- [x] **Auth → Allow manual linking** activado (2026-11-11).
-- [x] pg_cron (`011_cleanup_cron.sql`, 2026-11-11): `cleanup_guests()` diario 04:30 UTC y `cleanup_rooms()` cada 15 min
-      (cancela salas `waiting`/`playing` sin nadie conectado hace > 30 min).
-- [ ] **SMTP propio** en Supabase: el correo por defecto solo entrega a miembros del equipo, así que el registro con
-      correo y "olvidé mi contraseña" no llegan a usuarios reales.
+### Correo y autenticación (prioridad alta)
+- [ ] **SMTP propio** en Supabase (p. ej. Resend con dominio `tutifruti.site`): el correo por defecto solo entrega a
+      miembros del equipo, así que registro, "olvidé mi contraseña" y "guardar progreso" del invitado en web no llegan
+      a usuarios reales.
+- [ ] **Plantillas de correo** (Auth → Emails) en español y con enlace
+      `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=<signup|recovery|email_change>`. Sin esto, un
+      correo pedido desde el iPhone (PKCE) no se puede completar al abrirlo en otro dispositivo.
+- [ ] iOS: pasar `redirectTo` en `resetPasswordForEmail`/registro y tener pantalla para la nueva contraseña (hoy solo
+      "Cambiar contraseña" en Cuenta). Con las plantillas `token_hash`, el enlace abre la web y ahí se cambia.
+- [ ] Decidir si se mantiene la confirmación por correo (`mailer_autoconfirm: false`).
+- [ ] Probar Sign in with Apple en un dispositivo/simulador con Apple ID (configurado el 2026-11-10).
+- [ ] Iniciar sesión con Apple en la web: requiere Services ID + clave .p8 en Supabase (OAuth web).
+- [ ] Crear el correo `contacto@tutifruti.site` (lo citan Términos y Privacidad); el DNS ya está en Vercel, así que
+      el reenvío de Namecheap no sirve: usar un proveedor (ImprovMX, Zoho, Google Workspace…) y sus registros MX en Vercel.
 
-### Dashboard de Supabase (Auth)
-- [x] **Anonymous sign-ins** activado (2026-11-10).
-- [x] **Sign in with Apple** (2026-11-10): App ID `com.carlosordaz.tutifruti` creado en Apple Developer con la
-      capability; provider Apple activado en Supabase (flujo nativo `signInWithIdToken`); `DEVELOPMENT_TEAM: JZ9Z9GWH7P`
-      en `project.yml`. Falta probarlo en un dispositivo/simulador con Apple ID.
-- [ ] Decidir si se mantiene la confirmación por correo (`mailer_autoconfirm: false`). Personalizar plantillas de email
-      y configurar el redirect URL de "recuperar contraseña" (hoy no hay pantalla in-app para poner la nueva contraseña
-      desde el enlace; solo "Cambiar contraseña" en Cuenta).
+### Pruebas
+- [ ] **Probar end-to-end en el simulador con dos cuentas** (sala privada, pública, ronda, STOP, validación IA,
+      resultados, impugnación, clasificación final, subida de nivel).
+- [x] Web probada contra un bot (2026-11-11): ronda, STOP, validación IA, impugnación (resuelta por la 2.ª IA),
+      reacciones, final, logros y avisos.
+- [ ] Probar la web en ancho de móvil y en Safari/iPhone; partida mixta web + iOS en la misma sala.
+- [ ] Borrar datos de prueba: sala "Prueba IA" y usuarios anónimos `pruebaa*`/`pruebab*` (2026-11-10).
+- [ ] Tests (unitarios del store y UI tests) y CI (GitHub Actions: `svelte-check` + `build` de `webapp/`).
 
 ### Funcionalidad que falta o está simplificada
 - [ ] **Notificaciones push (APNs)**: hoy solo hay notificaciones in-app (tabla `notifications` + realtime + toast).
       Falta registro de device token, tabla de tokens y Edge Function/trigger que envíe a APNs respetando `notif_prefs`.
+      (En web se podría sumar Web Push.)
 - [ ] **Validar compras de StoreKit en el servidor**: `grant_item` se llama desde la app (cualquiera podría darse Plus).
       Implementar App Store Server API / notificaciones de servidor v2 en una Edge Function.
-- [ ] Crear los productos reales en App Store Connect (IDs en `StoreManager` y `Products.storekit`).
+- [ ] Crear los productos reales en App Store Connect (IDs en `StoreManager` y `Products.storekit`). La web no vende.
+- [ ] Publicar la app en App Store y enlazarla desde la landing (hoy dice "también en iPhone" sin enlace).
 - [ ] **Temas visuales** ("Pizarra", "Neón"): se guardan en `profiles.theme` pero la UI no los aplica todavía.
 - [ ] **Idioma de juego**: se guarda en `profiles.language` pero la IA y la UI siguen en español.
 - [ ] Notificación "amigo conectado" (`friend_online`) y "inicio de temporada" (`season`): las preferencias existen,
       pero nada las genera.
-- [ ] Logros `polyglot` y `season_top100` no se desbloquean (no hay lógica); cierre de temporada y entrega de
+- [ ] Logros `polyglot` y `season_top100` no se desbloquean (no hay lógica; la web los oculta); cierre de temporada y
       recompensas de temporada no implementados.
-- [ ] Moderación: los reportes se guardan en `reports` pero no hay panel ni acciones; filtrar chat de jugadores
-      silenciados funciona solo en cliente.
+- [ ] Moderación: los reportes se guardan en `reports` pero no hay panel ni acciones; silenciar solo filtra el chat
+      en cliente.
+- [ ] El árbitro a veces marca `checks.letter = true` en respuestas que no empiezan con la letra (visto con "Mesa" en
+      ronda D): revisar el prompt/esquema de `validate-round`.
 - [ ] `public.rooms`/`room_players`/`rounds`/`profiles` son legibles por cualquier usuario autenticado; endurecer RLS
       si se necesita más privacidad.
-- [x] Limpieza de salas abandonadas: `cleanup_rooms()` con pg_cron (ver Invitados).
-- [x] Ícono de la app (2026-11-10). Falta pantalla de lanzamiento personalizada.
-- [ ] Páginas reales de Términos y Privacidad (hoy apuntan a supabase.com como placeholder).
+- [ ] Pantalla de lanzamiento personalizada en iOS.
 - [ ] Renombrar migraciones al formato con timestamp del CLI si se va a usar `supabase db push`.
-- [ ] Tests (unitarios del store y UI tests) y CI.
+- [ ] SEO: dar de alta https://tutifruti.site en Google Search Console y enviar el `sitemap.xml`.
+
+### Hecho recientemente
+- [x] Edge Functions desplegadas y `GEMINI_API_KEY` configurado (2026-11-10).
+- [x] Auth: anonymous sign-ins, Apple nativo, **Allow manual linking**, URL Configuration con tutifruti.site (2026-11-11).
+- [x] pg_cron (`011_cleanup_cron.sql`, 2026-11-11): `cleanup_guests()` diario 04:30 UTC y `cleanup_rooms()` cada 15 min
+      (cancela salas `waiting`/`playing` sin nadie conectado hace > 30 min).
+- [x] Páginas reales de Términos y Privacidad (`tutifruti.site/terminos`, `/privacidad`), enlazadas desde iOS y web.
+- [x] Landing + SEO, versión web completa y despliegue automático GitHub → Vercel (2026-11-11).
+- [x] Ícono de la app (2026-11-10).
 
 ### Seguridad
-- [ ] Las claves secretas (secret key, service role, DB password, Gemini) se compartieron por chat: considerar
-      rotarlas antes de producción. Nunca deben ir en la app; la app solo usa la publishable key.
-- [ ] Inicializar git con `.gitignore` y no versionar este `CLAUDE.md` con credenciales en un repo público
-      (o moverlas a un archivo ignorado).
+- [ ] **Rotar las claves** (secret key, service role, contraseña de la base, Gemini): se compartieron por chat. Después
+      de rotarlas, actualizar `CLAUDE.local.md` y el secreto `GEMINI_API_KEY` de las Edge Functions.
+- [x] Git inicializado con `.gitignore`; las credenciales viven en `CLAUDE.local.md` (no versionado). El repo es
+      público: revisar que ningún commit futuro incluya claves.
 
 ## Convenciones
 - Responder y escribir la UI en español.
