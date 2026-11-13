@@ -224,7 +224,7 @@ sube al repo (`.gitignore`). Proyecto Supabase: `liejnmzxlpctqybecrbu`; la app y
 ### Funcionalidad
 - [ ] Crear los productos reales en App Store Connect (IDs en `StoreManager` y `Products.storekit`). La web no vende.
       Con `Products.storekit` (entorno Xcode) las compras no pasan la verificación del servidor: probar con sandbox.
-- [ ] Publicar la app en App Store y enlazarla desde la landing (hoy dice "también en iPhone" sin enlace).
+- [x] Botón "Descárgalo en el App Store" en la landing y el pie (`webapp/src/lib/landing/AppStoreBadge.svelte`, 2026-11-12).
 - [ ] Web Push (opcional).
 - [ ] La UI sigue en español aunque el idioma de juego sea inglés/portugués (solo cambia la validación y las letras).
 - [ ] Search Console: la propiedad de **dominio** `tutifruti.site` quedó creada sin verificar; para verificarla, añadir en
