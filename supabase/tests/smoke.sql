@@ -29,9 +29,12 @@ select call_stop((select id from rd));
 select set_config('request.jwt.claims','{"sub":"00000000-0000-0000-0000-0000000000b2","role":"authenticated"}',true);
 select save_answer((select id from rd),'País', (select letter from rd)||'éxico');
 reset role;
-update rounds set close_at = now() - interval '1 s' where id = (select id from rd);
+update rounds set close_at = now() - interval '3 s' where id = (select id from rd);
 set local role authenticated;
 select close_round((select id from rd));
+-- Guardado y STOP tardíos (jugador b2): se ignoran sin error (antes abrían una alerta en la app); su 'Animal' sigue vacío.
+select save_answer((select id from rd),'Animal','tarde');
+select call_stop((select id from rd));
 select validate_round_basic((select id from rd));
 select user_id, category, value, status, points from answers where round_id = (select id from rd) order by user_id, category;
 select d from submit_dispute((select id from rd),'00000000-0000-0000-0000-0000000000b2','Nombre','my_valid','Tengo un nombre muy bueno') d \gset

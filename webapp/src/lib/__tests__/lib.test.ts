@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { friendlyError, isNetworkError } from '../errors.ts';
+import { friendlyError, isNetworkError, isRoundClosed } from '../errors.ts';
 import { isConnected, languageName, xpForNext, type Profile, type RoomPlayer } from '../types.ts';
 import { THEMES, themeUnlocked, usableTheme } from '../themes.ts';
 
@@ -9,6 +9,13 @@ describe('errores', () => {
 	it('reconoce errores de red', () => {
 		expect(isNetworkError(new Error('TypeError: Failed to fetch'))).toBe(true);
 		expect(friendlyError(new Error('Failed to fetch'))).toMatch(/Sin conexión/);
+	});
+	it('un fallo al llamar a la Edge Function cuenta como corte de red', () => {
+		expect(isNetworkError(new Error('Failed to send a request to the Edge Function'))).toBe(true);
+	});
+	it('un guardado o STOP tardío no es un error del jugador', () => {
+		expect(isRoundClosed({ message: 'La ronda ya cerró' })).toBe(true);
+		expect(isRoundClosed({ message: 'Ronda no válida' })).toBe(false);
 	});
 	it('traduce errores de autenticación', () => {
 		expect(friendlyError({ message: 'Invalid login credentials' })).toBe('Correo o contraseña incorrectos.');

@@ -3,7 +3,7 @@ import { supabase } from '../supabase';
 import { app } from '../app.svelte';
 import * as API from '../api';
 import { serverNow, syncClock } from '../clock';
-import { friendlyError, isNetworkError } from '../errors';
+import { friendlyError, isNetworkError, isRoundClosed } from '../errors';
 import { isConnected, type Answer, type ChatMessage, type Dispute, type Reaction, type Room, type RoomPlayer, type Round } from '../types';
 
 export type GamePhase = 'loading' | 'lobby' | 'matchmaking' | 'letterDraw' | 'answering' | 'validating' | 'results' | 'finished' | 'cancelled';
@@ -268,12 +268,19 @@ export class Game {
 		if (this.isOffline || !this.room) return;
 		const r = this.currentRound;
 		switch (this.phase) {
-			case 'answering':
-				if (r && this.now >= new Date(r.close_at).getTime() && this.throttle(`close-${r.id}`, 2000)) {
-					await this.flushAll(r.id);
+			case 'answering': {
+				if (!r) return;
+				const close = new Date(r.close_at).getTime();
+				// Lo escrito se manda antes de que venza el tiempo (a 1,2 s del final y al llegar a 0) para que llegue
+				// antes de que nadie cierre la ronda; el servidor acepta respuestas hasta 2 s después de close_at.
+				if (this.now >= close - 1200 && this.throttle(`flush1-${r.id}`, 600_000)) await this.flushAll(r.id);
+				if (this.now >= close && this.throttle(`flush2-${r.id}`, 600_000)) await this.flushAll(r.id);
+				// close_round da 1 s de gracia tras close_at (antes solo devuelve 'playing'): se cierra pasado ese segundo.
+				if (this.now >= close + 1000 && this.throttle(`close-${r.id}`, 2000)) {
 					try { if ((await API.closeRound(r.id)) === 'validating') await this.refresh(); } catch { /* reintenta */ }
 				}
 				break;
+			}
 			case 'validating': {
 				if (!r) return;
 				const started = r.validation_started_at ? new Date(r.validation_started_at).getTime() : this.now;
@@ -298,7 +305,8 @@ export class Game {
 	private async runAIValidation(roundId: string) {
 		this.validatingNow = true;
 		try {
-			await API.validateWithAI(roundId);
+			// La conexión suele estar inactiva tras 60–90 s de ronda: un corte transitorio se reintenta sin contarlo.
+			await this.retrying(() => API.validateWithAI(roundId));
 			this.aiFailed = false;
 		} catch {
 			this.aiAttempt += 1; this.aiFailed = true;
@@ -314,10 +322,16 @@ export class Game {
 		this.saveTimers[cat] = setTimeout(() => { const r = this.currentRound; if (r) void this.save(r.id, cat); }, 600);
 	}
 	private async save(roundId: string, cat: string) {
+		// Solo mientras la ronda siga abierta: si ya cerró, el servidor ignora la respuesta y aquí no se molesta al jugador.
+		const r = this.currentRound;
+		if (!r || r.id !== roundId || r.status !== 'playing') return;
 		const v = (this.drafts[cat] ?? '').trim();
 		if (this.saved[cat] === v) return;
 		try { await API.saveAnswer(roundId, cat, v); this.saved[cat] = v; }
-		catch (e) { if (!this.isOffline && !isNetworkError(e)) this.errorMessage = friendlyError(e); }
+		catch (e) {
+			// Un guardado tardío ("La ronda ya cerró") o un corte de red no son errores del jugador.
+			if (!this.isOffline && !isNetworkError(e) && !isRoundClosed(e)) this.errorMessage = friendlyError(e);
+		}
 	}
 	async flushAll(roundId: string) { await Promise.all(this.categories.map((c) => this.save(roundId, c))); }
 
@@ -332,6 +346,7 @@ export class Game {
 		}
 	}
 	private report(e: unknown) {
+		if (isRoundClosed(e)) return;
 		if (isNetworkError(e)) { this.showNotice('Sin conexión · reintentando…'); void this.resync(); return; }
 		this.errorMessage = friendlyError(e);
 	}

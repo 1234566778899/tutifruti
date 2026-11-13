@@ -1,7 +1,12 @@
 /** Mensajes de error amigables (mismos criterios que iOS). */
 export function isNetworkError(e: unknown): boolean {
 	const m = String((e as { message?: string })?.message ?? e).toLowerCase();
-	return m.includes('failed to fetch') || m.includes('network') || m.includes('load failed') || m.includes('timeout');
+	return m.includes('failed to fetch') || m.includes('fetch failed') || m.includes('network') || m.includes('load failed')
+		|| m.includes('timeout') || m.includes('failed to send a request');
+}
+/** La ronda ya había cerrado cuando llegó la petición (guardado o STOP tardíos): no es un error del jugador. */
+export function isRoundClosed(e: unknown): boolean {
+	return /ya cerr/i.test(String((e as { message?: string })?.message ?? e));
 }
 export function friendlyError(e: unknown): string {
 	if (isNetworkError(e)) return 'Sin conexión a internet. Revisa tu red e inténtalo de nuevo.';

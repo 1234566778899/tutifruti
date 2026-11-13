@@ -385,9 +385,22 @@ func isCancellation(_ error: Error) -> Bool {
 func isNetworkError(_ error: Error) -> Bool {
     let codes: Set<Int> = [NSURLErrorNotConnectedToInternet, NSURLErrorNetworkConnectionLost, NSURLErrorTimedOut,
                            NSURLErrorCannotConnectToHost, NSURLErrorCannotFindHost, NSURLErrorDNSLookupFailed,
-                           NSURLErrorInternationalRoamingOff, NSURLErrorDataNotAllowed, NSURLErrorSecureConnectionFailed]
+                           NSURLErrorInternationalRoamingOff, NSURLErrorDataNotAllowed, NSURLErrorSecureConnectionFailed,
+                           NSURLErrorBadServerResponse, NSURLErrorCannotParseResponse, NSURLErrorResourceUnavailable,
+                           NSURLErrorBackgroundSessionWasDisconnected]
     let ns = error as NSError
-    return ns.domain == NSURLErrorDomain && codes.contains(ns.code)
+    if ns.domain == NSURLErrorDomain { return codes.contains(ns.code) }
+    // Errores de socket sin envolver (p. ej. "Software caused connection abort" al volver de segundo plano).
+    if ns.domain == NSPOSIXErrorDomain {
+        return [ECONNABORTED, ECONNRESET, ENETDOWN, ENETUNREACH, ETIMEDOUT, EHOSTUNREACH, EHOSTDOWN, EPIPE, ENOTCONN]
+            .contains(Int32(ns.code))
+    }
+    return false
+}
+
+/// La ronda ya había cerrado cuando llegó la petición (guardado o STOP tardíos): no es un error del jugador.
+func isRoundClosed(_ error: Error) -> Bool {
+    (error as? PostgrestError)?.message.contains("ya cerró") == true
 }
 
 func friendlyError(_ error: Error) -> String {

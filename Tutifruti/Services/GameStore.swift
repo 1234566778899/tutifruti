@@ -344,8 +344,13 @@ final class GameStore {
                 await refresh()
             }
         case .answering:
-            if let r = currentRound, now >= r.closeAt, throttle("close-\(r.id)", 2) {
-                await flushAll(r.id)
+            guard let r = currentRound else { return }
+            // Lo escrito se manda antes de que venza el tiempo (a 1,2 s del final y al llegar a 0) para que llegue
+            // antes de que nadie cierre la ronda; el servidor acepta respuestas hasta 2 s después de close_at.
+            if now >= r.closeAt.addingTimeInterval(-1.2), throttle("flush1-\(r.id)", 600) { await flushAll(r.id) }
+            if now >= r.closeAt, throttle("flush2-\(r.id)", 600) { await flushAll(r.id) }
+            // close_round da 1 s de gracia tras close_at (antes solo devuelve 'playing'): se cierra pasado ese segundo.
+            if now >= r.closeAt.addingTimeInterval(1), throttle("close-\(r.id)", 2) {
                 if (try? await API.closeRound(r.id)) == "validating" { await refresh() }
             }
         case .validating:
@@ -375,7 +380,8 @@ final class GameStore {
         validatingNow = true
         defer { validatingNow = false }
         do {
-            try await API.validateWithAI(roundId)
+            // La conexión suele estar inactiva tras 60–90 s de ronda: un corte transitorio se reintenta sin contarlo.
+            try await retrying { try await API.validateWithAI(roundId) }
             aiFailed = false
         } catch {
             aiAttempt += 1
@@ -403,13 +409,17 @@ final class GameStore {
     }
 
     private func save(_ roundId: UUID, _ category: String) async {
+        // Solo mientras la ronda siga abierta: si ya cerró, el servidor ignora la respuesta y aquí no se molesta al jugador.
+        guard let r = currentRound, r.id == roundId, r.status == "playing" else { return }
         let value = (drafts[category] ?? "").trimmingCharacters(in: .whitespaces)
         guard saved[category] != value else { return }
         do {
             try await API.saveAnswer(round: roundId, category: category, value: value)
             saved[category] = value
         } catch {
-            if !isOffline && !isCancellation(error) && !isNetworkError(error) { errorMessage = friendlyError(error) }
+            // Un guardado tardío ("La ronda ya cerró") o un corte de red no son errores del jugador.
+            if isOffline || isCancellation(error) || isNetworkError(error) || isRoundClosed(error) { return }
+            errorMessage = friendlyError(error)
         }
     }
 
@@ -459,7 +469,7 @@ final class GameStore {
     /// Error para el usuario: los cortes de red van como aviso discreto (y se reconecta);
     /// solo los errores reales abren la alerta "Algo salió mal".
     private func report(_ error: Error) {
-        guard !isCancellation(error) else { return }
+        guard !isCancellation(error), !isRoundClosed(error) else { return }
         if isNetworkError(error) {
             showNotice("Sin conexión · reintentando…")
             Task { await resync() }

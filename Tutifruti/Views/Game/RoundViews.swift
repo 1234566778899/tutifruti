@@ -354,7 +354,6 @@ struct TimeBar: View {
 // MARK: Validando con IA
 struct ValidatingView: View {
     @Bindable var game: GameStore
-    @State private var dismissedFor = -1
     @State private var start = Date()
 
     private var letter: String { game.currentRound?.letter ?? "" }
@@ -415,21 +414,30 @@ struct ValidatingView: View {
                             PendingAnswerCard(category: cat, value: game.drafts[cat] ?? "", scanning: i == scanning)
                         }
                     }
+                    // El árbitro falló: aviso en línea (no una alerta), porque se reintenta solo.
+                    if game.aiFailed && game.aiAttempt < 3 {
+                        GamePanel(padding: 12) {
+                            HStack(spacing: 10) {
+                                Image(systemName: "arrow.triangle.2.circlepath")
+                                    .font(.headline.weight(.black)).foregroundStyle(Game.lemon)
+                                    .symbolEffect(.pulse)
+                                Text("El árbitro tarda más de lo normal. Reintentando (intento \(game.aiAttempt + 1) de 3)…")
+                                    .font(.footnote.weight(.semibold)).foregroundStyle(.white.opacity(0.85))
+                                Spacer(minLength: 4)
+                                Button("Ahora") { game.retryAI() }
+                                    .font(.footnote.weight(.heavy)).foregroundStyle(Game.lemon)
+                            }
+                        }
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                    }
                 }
+                .animation(.spring(duration: 0.35), value: game.aiFailed)
                 .padding(.horizontal, 16)
                 .padding(.bottom, 20)
             }
         }
         .gameTitle("Ronda \(game.currentRound?.number ?? 1) de \(game.room?.roundsTotal ?? 1)")
         .navigationBarTitleDisplayMode(.inline)
-        .alert("El árbitro tardó demasiado", isPresented: Binding(
-            get: { game.aiFailed && game.aiAttempt < 3 && dismissedFor != game.aiAttempt },
-            set: { if !$0 { dismissedFor = game.aiAttempt } })) {
-            Button("Reintentar ahora") { game.retryAI() }
-            Button("Esperar", role: .cancel) {}
-        } message: {
-            Text("Tus respuestas están guardadas. Estamos reintentando la validación automáticamente (intento \(game.aiAttempt + 1) de 3).")
-        }
     }
 }
 

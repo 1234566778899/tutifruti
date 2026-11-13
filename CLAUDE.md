@@ -99,6 +99,12 @@ https://www.figma.com/design/P8AAzV4oac2pY8r4GKSKiQ/tutifruti?node-id=3260-2
   los desconectados >45 s no bloquean; migración `20261109000006_round_ready.sql`).
 - STOP: disponible al completar el 75 % de las categorías (redondeado arriba; `stop_threshold`, migración
   `20261109000009_stop_threshold.sql`). El botón solo aparece al llegar a ese mínimo.
+- **Cierre de ronda** (`20261112000021_round_close_grace.sql`): `close_round` da 1 s de gracia tras `close_at`;
+  `save_answer` acepta hasta `close_at + 2 s` mientras la ronda siga en `playing` y un guardado o `call_stop`
+  tardíos se **ignoran en silencio** (antes lanzaban "La ronda ya cerró" y la app lo mostraba como alerta al pasar
+  a la revisión). Los clientes vacían lo escrito a 1,2 s del final y al llegar a 0, y cierran a `close_at + 1 s`;
+  `save()` no manda nada si la ronda ya no está en `playing` y trata ese error como no-error (`isRoundClosed`).
+  En iOS el fallo del árbitro es un aviso en línea (no alerta) y `validate-round` se reintenta ante cortes de red.
 - Puntos: 10 única, 5 repetida, 0 inválida/vacía/dudosa. 2 impugnaciones por partida (`submit_dispute` →
   `resolve-dispute`, respaldo `resolve_dispute_basic`).
 - XP por nivel: `250 * nivel`. Logros en `achievements`.
@@ -260,6 +266,8 @@ sube al repo (`.gitignore`). Proyecto Supabase: `liejnmzxlpctqybecrbu`; la app y
       `webapp/static/google088833cd70b12589.html` (no borrar) y `sitemap.xml` enviado (2026-11-11).
 
 ### Hecho recientemente
+- [x] Error intermitente "La ronda ya cerró" / alerta al pasar a revisión: corregido en servidor, iOS y web (2026-11-12);
+      ver "Cierre de ronda" en Lógica del juego. Migración `20261112000021` aplicada en producción el 2026-11-12.
 - [x] Edge Functions desplegadas y `GEMINI_API_KEY` configurado (2026-11-10).
 - [x] Auth: anonymous sign-ins, Apple nativo, **Allow manual linking**, URL Configuration con tutifruti.site (2026-11-11).
 - [x] pg_cron (`20261109000011_cleanup_cron.sql`, 2026-11-11): `cleanup_guests()` diario 04:30 UTC y `cleanup_rooms()` cada 15 min
