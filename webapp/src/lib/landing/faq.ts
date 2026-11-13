@@ -3,7 +3,7 @@ export const FAQ: [string, string][] = [
 	['¿Qué es Tutifruti AI?',
 		'Es el clásico juego de palabras Stop, Basta o Tutifruti en versión multijugador. Sale una letra, todos completan las mismas categorías (nombre, país, animal, fruta…) y un árbitro de inteligencia artificial valida cada respuesta y explica su decisión.'],
 	['¿Es gratis?',
-		'Sí. Puedes jugar gratis desde el navegador, en computadora o celular, y también desde la app de iPhone.'],
+		'Sí. Puedes jugar gratis desde el navegador, en computadora o celular, y también desde la app de iPhone (gratis en el App Store).'],
 	['¿Necesito crear una cuenta?',
 		'No. Toca “Jugar ahora”, elige un apodo y un avatar, y ya puedes entrar a una sala como invitado. Si quieres conservar tu nivel y agregar amigos, crea una cuenta con tu correo.'],
 	['¿Cómo valida las respuestas la IA?',

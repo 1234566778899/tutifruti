@@ -5,6 +5,7 @@
 	import RoundDemo from '#lib/landing/RoundDemo.svelte';
 	import { reveal } from '#lib/landing/reveal.ts';
 	import { FAQ } from '#lib/landing/faq.ts';
+	import AppStoreBadge, { APP_STORE_URL } from '#lib/landing/AppStoreBadge.svelte';
 
 	const title = 'Tutifruti AI · Juega Stop, Basta o Tutifruti online con árbitro de IA';
 	const description = 'Juega gratis al Stop / Basta / Tutifruti online con tus amigos. Sale una letra, completa las categorías y un árbitro de inteligencia artificial valida cada respuesta. En el navegador y en iPhone.';
@@ -14,7 +15,7 @@
 			url: 'https://tutifruti.site/', image: 'https://tutifruti.site/og.png', description, inLanguage: 'es',
 			genre: ['Juego de palabras', 'Party game', 'Trivia'], playMode: ['MultiPlayer', 'CoOp'], numberOfPlayers: { '@type': 'QuantitativeValue', minValue: 2, maxValue: 12 },
 			gamePlatform: ['Web', 'iOS'], applicationCategory: 'GameApplication', operatingSystem: 'Web, iOS',
-			offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' }
+			offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' }, sameAs: [APP_STORE_URL]
 		},
 		{ '@context': 'https://schema.org', '@type': 'WebSite', name: 'Tutifruti AI', url: 'https://tutifruti.site/', inLanguage: 'es' },
 		{
@@ -53,9 +54,9 @@
 				<p class="lead">Stop, Basta, Tutifruti o Mercado: como le digas. Sale una letra, todos completan las categorías y la inteligencia artificial valida cada respuesta. Sin trampas ni discusiones.</p>
 				<div class="ctas">
 					<a class="candy" href="/jugar"><span class="ic"><Play size={20} strokeWidth={3} /></span>Jugar ahora</a>
-					<a class="ghost" href="#como-se-juega">Cómo se juega</a>
+					<AppStoreBadge />
 				</div>
-				<p class="small">Sin descargas ni registro: entra como invitado en segundos. También en iPhone.</p>
+				<p class="small">Juega en el navegador sin descargas ni registro, o descarga la app para iPhone.</p>
 			</div>
 			<div class="art">
 				<img class="tuti" src="/img/mascot/tuti_hello.png" alt="Tuti, la mascota naranja de Tutifruti AI, saludando" width="190" height="190" fetchpriority="high" />
@@ -136,6 +137,7 @@
 			<h2>¿Listos? Sale la primera letra…</h2>
 			<p>Invita a tus amigos por WhatsApp y empieza en menos de un minuto.</p>
 			<a class="candy" href="/jugar"><span class="ic"><Play size={20} strokeWidth={3} /></span>Jugar gratis</a>
+			<div class="also"><span>o en tu iPhone</span><AppStoreBadge /></div>
 		</section>
 	</main>
 </SiteChrome>
@@ -155,9 +157,6 @@
 		box-shadow: inset 0 0 0 2px rgba(46,28,20,.5), 0 4px 0 #b9640d, 0 14px 30px rgba(255,148,31,.3); transition: transform .15s; }
 	.candy:hover { transform: translateY(-2px); } .candy:active { transform: translateY(2px); }
 	.candy .ic { display: grid; place-items: center; width: 46px; height: 46px; border-radius: 50%; background: #fff; color: var(--tangerine); }
-	.ghost { padding: 0 22px; height: 54px; display: inline-flex; align-items: center; border-radius: 999px; border: 1.5px solid rgba(255,255,255,.25);
-		color: #fff; text-decoration: none; font-weight: 900; }
-	.ghost:hover { border-color: var(--lemon); color: var(--lemon); }
 	.small { color: rgba(255,255,255,.6); font-size: 14px; font-weight: 700; margin-top: 16px; }
 	.art { position: relative; display: flex; justify-content: center; padding-top: 70px; }
 	.tuti { position: absolute; top: -30px; right: max(0px, calc(50% - 250px)); z-index: 2; animation: sway 2.4s ease-in-out infinite alternate; transform-origin: 50% 100%; }
@@ -208,6 +207,7 @@
 
 	.final { text-align: center; padding-top: 100px; display: flex; flex-direction: column; align-items: center; gap: 6px; }
 	.final p { color: rgba(255,255,255,.75); font-weight: 700; font-size: 18px; margin: 0 0 18px; }
+	.also { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 18px; color: rgba(255,255,255,.6); font-weight: 800; font-size: 14px; }
 	.final img { animation: hop .8s ease-in-out infinite alternate; }
 	@keyframes hop { to { transform: translateY(-10px) scale(1.03); } }
 

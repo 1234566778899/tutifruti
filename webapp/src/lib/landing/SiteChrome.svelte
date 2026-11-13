@@ -2,6 +2,7 @@
 	import type { Snippet } from 'svelte';
 	import { onMount } from 'svelte';
 	import { Play } from '@lucide/svelte';
+	import AppStoreBadge from './AppStoreBadge.svelte';
 	/** Barra superior y pie de las páginas públicas. */
 	let { children }: { children: Snippet } = $props();
 	let hasSession = $state(false), scrolled = $state(false);
@@ -37,6 +38,7 @@
 		<div class="grow">
 			<b>Tutifruti AI</b>
 			<p>El Stop, Basta o Tutifruti de siempre, con un árbitro de inteligencia artificial. Hecho con cariño en Latinoamérica.</p>
+			<div class="store"><AppStoreBadge size="sm" /></div>
 		</div>
 		<nav aria-label="Legal">
 			<a href="/como-jugar">Reglas</a>
@@ -63,5 +65,6 @@
 	.foot .inner { align-items: flex-start; padding: 28px 20px 10px; flex-wrap: wrap; }
 	.foot p { margin: 4px 0 0; color: rgba(255,255,255,.65); font-size: 14px; max-width: 460px; }
 	.foot nav { flex-direction: column; gap: 8px; }
+	.store { margin-top: 12px; }
 	.copy { text-align: center; color: rgba(255,255,255,.4); font-size: 13px; padding: 0 0 24px; margin: 0; }
 </style>
