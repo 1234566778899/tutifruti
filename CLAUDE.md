@@ -169,8 +169,13 @@ sube al repo (`.gitignore`). Proyecto Supabase: `liejnmzxlpctqybecrbu`; la app y
   clasificación 4+, gratis en 175 países, privacidad `https://tutifruti.site/privacidad` (6 tipos de datos, uso
   "Funcionalidad de la app", vinculados, sin rastreo). Notas al revisor: entrar como invitado y jugar con 2 dispositivos
   o iPhone + web.
-- Para subir otra versión: subir `MARKETING_VERSION`/`CURRENT_PROJECT_VERSION`, `xcodegen generate`, `xcodebuild archive`
-  (Release) y `xcodebuild -exportArchive` con `ExportOptions.plist` cambiando `destination` a `upload`.
+- **1.0 aprobada y publicada** ("Listo para distribución", visto el 2026-11-13). **1.0.1 (2)** subida el 2026-11-13 con la
+  corrección del fin de ronda; falta crear/enviar la versión 1.0.1 en App Store Connect.
+- Para subir otra versión: subir `MARKETING_VERSION`/`CURRENT_PROJECT_VERSION` en `project.yml` (`Tutifruti/Info.plist`
+  ya usa `$(MARKETING_VERSION)`/`$(CURRENT_PROJECT_VERSION)`; antes tenía "1.0"/"1" fijos y pisaba al proyecto),
+  `xcodegen generate`, `xcodebuild archive` (Release, `-allowProvisioningUpdates`) y `xcodebuild -exportArchive` con una
+  copia de `ExportOptions.plist` con `destination` = `upload`. Una versión ya aprobada no admite builds nuevos: hay que
+  subir la de marketing (p. ej. 1.0 → 1.0.1).
 - **Capturas** (`art/appstore/`, 1206×2622): esquema `Screenshots` (`TutifrutiUITests/ScreenshotTests.swift`) +
   `tools/screenshot_bots.mjs` (mete 2 invitados en la sala, fija la letra M y responde). Correr ambos a la vez con
   `SHOTS_DIR` y `SERVICE_KEY`; al final borrar la sala y los invitados que imprime `CLEANUP`.
